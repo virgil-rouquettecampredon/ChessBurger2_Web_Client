@@ -1,0 +1,759 @@
+<!doctype html>
+<meta charset="utf-8">
+<html lang="fr">
+<head>
+    <title>ChessBurger, le 2</title>
+
+    <!-- ==================== FONT ==================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="icon" href="./res/drawable/img/img.png">
+
+    <!-- BOOSTRAP -->
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- ==================== CSS ====================-->
+    <link href="./css/general.css" rel="stylesheet">
+    <link href="./css/game.css" rel="stylesheet">
+    <link href="./css/menus.css" rel="stylesheet">
+
+    <!-- ==================== JS ==================== -->
+    <script type="text/javascript" src="js/Model/util.js"></script>
+    <script type="text/javascript" src="js/Model/Drawing.js" ></script>
+    <script type="text/javascript" src="js/Model/animator.js" ></script>
+    <script type="text/javascript" src="js/Model/Action.js" ></script>
+    <script type="text/javascript" src="js/Model/Movement.js" ></script>
+    <script type="text/javascript" src="js/Model/Piece.js" ></script>
+    <script type="text/javascript" src="js/Model/Player.js" ></script>
+    <script type="text/javascript" src="js/Model/Board.js" ></script>
+    <script type="text/javascript" src="js/Model/Game.js" ></script>
+</head>
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-light" id="neubar">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="startHomePage()">
+                <img src="./res/drawable/img/logo_chessburger_2.png" height="60"/>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class=" collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto ">
+                    <li class="nav-item">
+                        <a class="nav-link mx-2" href="#" aria-current="page" onclick="startHomePage()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" class="bi bi-house" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+                                <path fill-rule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="profil">
+                        <a class="nav-link mx-2" onclick="startProfil()">Profil</a>
+                    </li>
+                    <li class="nav-item" id="jouer">
+                        <a class="nav-link mx-2" onclick="startJouer()">Jouer</a>
+                    </li>
+                    <li class="nav-item" id="authentification">
+                        <a class="nav-link mx-2" href="#connection">Authentification</a>
+                    </li>
+                    <li class="nav-item" id="Déconnexion">
+                        <a class="nav-link mx-2" onclick="startDeconnexion()">Déconnexion</a>
+                    </li>
+                    <li class="nav-item dropdown" id="annexe">
+                        <a class="nav-link mx-2 dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Autre
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Boutique</a></li>
+                            <li><a class="dropdown-item" href="#">A propos</a></li>
+                            <li><a class="dropdown-item" href="#">Nous contacter</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<body >
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+    <div id="main_container_chess" class="pt-5 d-flex justify-content-center align-content-center">
+        <div class="mt-5 container justify-content-center align-content-center">
+        <div id="chessGame" class="row flex-lg-row d-flex flex-column">
+            <div id="game" class="col-lg-6 col-md-12 h-100">
+            </div>
+            <div id="gameUI" class="col-lg-6 col-md-12 d-flex flex-column">
+            </div>
+
+            <div  class="col-12 text-center">
+                <button class="btn_option btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">Options de jeu</button>
+            </div>
+
+            <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+                <div class="offcanvas-header">
+                    <h2 class="offcanvas-title" id="offcanvasBottomLabel">Options de jeu</h2>
+                    <button type="button" class="btn-close btn-lg" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body row text-center">
+
+                    <div class="col-6">
+                    <div class="dropdown mt-3">
+                        <button style="font-size: x-large" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                            Changer de mode de jeu
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item">King of the hill</a></li>
+                            <li><a class="dropdown-item">4 joueurs</a></li>
+                            <li><a class="dropdown-item">Fog of war</a></li>
+                        </ul>
+                    </div>
+                    </div>
+
+                    <div class="col-6">
+                    <button style="font-size: x-large" class="btn-warning btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">Déclarer forfait</button>
+                    <p>
+                        (Ca serait dommage de laisser votre adversaire l’emporter si facilement...)
+                    </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+
+    <div id="homepage" class="container-fluid">
+        <div class="parallaxBG row">
+            <div class="px-4 pt-5 pb-1 mb-2 mt-5 text-center">
+                <div class="row my-5"></div>
+                <img class="d-block mx-auto mt-5 mb-4" src="./res/drawable/img/jumble_pieces.png" alt="" width="75" height="100">
+                <h1 class="display-6 fw-bold" id="title" style="font-family: 'Permanent Marker', cursive; font-size: xxx-large">ChessBurger 2</h1>
+                <div class="col-lg-6 mx-auto">
+                    <p class="lead mb-4" id="description" style="font-family: 'Roboto', sans-serif;">Bienvenue sur le site internet de ChessBurger pour jouer en ligne aux échecs</p>
+                    <div class="d-grid gap-5 d-sm-flex justify-content-sm-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="white" class="bi bi-phone" viewBox="0 0 16 16">
+                            <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/>
+                            <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="white" class="bi bi-laptop" viewBox="0 0 16 16">
+                            <path d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5h11zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="connection">
+        <div class="container-fluid h-custom">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-9 col-lg-6 col-xl-5">
+                    <img src="./res/drawable/img/logo.png" class="img-fluid" alt="Sample image">
+                </div>
+                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                    <form>
+                        <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+                            <h1 class="lead fw-bolder mb-2 me-3">Authentification</h1>
+                        </div>
+
+
+                        <div class="form-outline mb-4">
+                            <input type="email" id="mail" class="form-control form-control-lg" placeholder="Entrer une adresse email valide" />
+                            <label class="form-label" for="mail">Adresse email</label>
+                        </div>
+
+
+                        <div class="form-outline mb-3">
+                            <input type="password" id="psw" class="form-control form-control-lg"
+                                   placeholder="Enter un mot de passe" />
+                            <label class="form-label" for="psw">Mot de passe</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div class="form-check mb-0">
+                                <input class="form-check-input me-2" type="checkbox" value="" id="souvenir" />
+                                <label class="form-check-label" for="souvenir">
+                                    Se souvenir de moi
+                                </label>
+                            </div>
+                            <a onclick="startForgotPsw()" style="cursor: pointer" class="text-body">Mot de passe oublié ?</a>
+                        </div>
+
+                        <div class="text-center text-lg-start mt-4 pt-2">
+                            <button type="button" class="btn btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem;" onclick="startConnexion()">Connexion</button>
+                            <p class="small fw-bold mt-2 pt-1 mb-0">Vous n'avez pas de compte ? <a onclick="swapConnectionCreation()" class="link-dark" style="cursor: pointer">Créer un compte</a></p>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        </section>
+
+        <section id="createAccount">
+            <div class="container-fluid h-custom">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-md-9 col-lg-6 col-xl-5">
+                        <img src="./res/drawable/img/logo.png" class="img-fluid" alt="Sample image">
+                    </div>
+                    <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                        <form>
+                            <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
+                                <h1 class="lead fw-bolder mb-2 me-3">Créer un compte</h1>
+                            </div>
+
+
+                            <div class="form-outline mb-4">
+                                <input type="email" id="account_mail" class="form-control form-control-lg" placeholder="Entrer une adresse email valide" />
+                                <label class="form-label" for="mail">Adresse email</label>
+                            </div>
+
+
+                            <div class="form-outline mb-3">
+                                <input type="password" id="account_psw" class="form-control form-control-lg"
+                                       placeholder="Enter un mot de passe" />
+                                <label class="form-label" for="psw">Mot de passe</label>
+                            </div>
+
+                            <div class="form-outline mb-3">
+                                <input type="password" id="account_pseudo" class="form-control form-control-lg"
+                                       placeholder="mot de passe" />
+                                <label class="form-label" for="psw">pseudo</label>
+                            </div>
+
+                            <div class="text-center text-lg-start mt-4 pt-2">
+                                <button type="button" class="btn btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem;" onclick="startCreerUnCompte()">Creer le compte</button>
+                                <p class="small fw-bold mt-2 pt-1 mb-0">Vous avez un compte ? <a onclick="swapConnectionCreation()" class="link-dark" style="cursor: pointer">Se connecter</a></p>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="connected" class="container-fluid">
+        <div id="menubtn" class="row mt-5 p-5 align-items-center">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <div class="mb-4" style="text-align: center">
+                    <h2 class="d-block">Modes de jeu</h2>
+                </div>
+                <div class="my-3 fw-bold">
+                    <button type="button" class="btn btn-lg menubtn btn-block">ONLINE</button>
+                </div>
+                <div class="my-3 fw-bold">
+                    <button type="button" class="btn btn-lg menubtn btn-block">LOCAL</button>
+                </div>
+                <div class="my-3 fw-bold">
+                    <button type="button" class="btn btn-lg menubtn btn-block" onclick="startProfil()">PROFIL</button>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+    </div>
+
+    <div id="BG_connected" class="parallaxBG parallaxBGBis">
+    </div>
+
+
+    <div id="OnlyProfil" class="py-5 ">
+    </div>
+
+    <div id="listElem" class="container align-items-center justify-content-center d-flex flex-column" >
+            <h1 class="p-5">
+                Liste des parties de jeu
+                <p class="float-end ps-5" data-bs-toggle="modal" data-bs-target="#CreatePartyModal" style="cursor: pointer; fill: #C27BA0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                </p>
+            </h1>
+        <ul id="party" class="list-group gap-5" style="width: 100%; font-size: x-large">
+            <li class="list-group-item">
+                Nom de la partie
+                <button type="button" class="btn btn-primary float-end p-4" onclick="joinParty()">Rejoindre</button>
+            </li>
+        </ul>
+    </div>
+
+    <div id="account" class="container">
+    <div class="row">
+        <div id="profil_card" class="col-12 col-md-4">
+            <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+            <div class="card p-4">
+                <div class=" image d-flex flex-column justify-content-center align-items-center">
+                    <img id="profilPic" class="rounded-circle" onclick="startEditImage()" src="./res/drawable/img/avatar.png" height="100" width="100" />
+                    <span class="name mt-5 pb-5" id="nameCoonected">Dark Virgil</span>
+                    <div class="d-flex flex-row justify-content-center align-items-center my-3">
+                        <span id="profil_elo" class="number">1069
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" class="bi bi-trophy-fill" viewBox="0 0 16 16">
+                                <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="text mb-3">
+                        <span id="profil_description">
+                            Gamer mystérieux
+                        </span>
+                    </div>
+                    <div class=" d-flex mt-2">
+                        <button class="btn1 btn-dark" onclick="startEditProfil()">Editer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="col-11 col-md-7 mt-4 p-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0" data-bs-toggle="modal" data-bs-target="#preferencesModal" style="cursor: pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                                    <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                                </svg>
+                            </p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 class="text-muted mb-0">
+                                Préférence
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0" data-bs-toggle="modal" data-bs-target="#historyModal" style="cursor: pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
+                                    <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                                </svg>
+                            </p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 class="text-muted mb-0">
+                                Historique des parties
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3" data-bs-toggle="modal" data-bs-target="#classementModal" style="cursor: pointer">
+                            <h4 class="mb-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-trophy" viewBox="0 0 16 16">
+                                    <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935zM3.504 1c.007.517.026 1.006.056 1.469.13 2.028.457 3.546.87 4.667C5.294 9.48 6.484 10 7 10a.5.5 0 0 1 .5.5v2.61a1 1 0 0 1-.757.97l-1.426.356a.5.5 0 0 0-.179.085L4.5 15h7l-.638-.479a.501.501 0 0 0-.18-.085l-1.425-.356a1 1 0 0 1-.757-.97V10.5A.5.5 0 0 1 9 10c.516 0 1.706-.52 2.57-2.864.413-1.12.74-2.64.87-4.667.03-.463.049-.952.056-1.469H3.504z"/>
+                                </svg>
+                            </h4>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 class="text-muted mb-0">
+                                Classement
+                            </h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0" data-bs-toggle="modal" data-bs-target="#supAccountModal" style="cursor: pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </p>
+                        </div>
+                        <div class="col-sm-9">
+                            <h4 class="text-muted mb-0">
+                                Supprimer le compte
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="modal fade" id="CreatePartyModal" tabindex="-1" aria-labelledby="CreatePartyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="CreatePartyModalLabel">Créer une partie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label" for="partyName">Nom de la partie</label>
+                    <input type="text" id="partyName" class="form-control form-control-lg" placeholder="Nom de partie">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addUIParty()">Céer une partie</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="preferencesModal" tabindex="-1" aria-labelledby="preferenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="preferenceModalLabel">Preférences</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" onclick="startPreference()">Sauvegarder les changements</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="historyModalLabel">Historique des parties</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="Historique_liste" class="accordion">
+                        <!--<div class="accordion-item">
+                            <h2 class="accordion-header" id="heading_1">
+                                        <button class="accordion-button collapsed" type="button" aria-expanded="false" data-bs-toggle="collapse" data-bs-target="#collapse_1" aria-controls="collapse_1">
+                                            <div class="float-end history_btn_res win">
+                                                <p>+12</p>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="playerName ps-5">
+                                                <h4>NomDuJoueur</h4>
+                                            </div>
+                                        </button>
+                                    </h2>
+                            <div id="collapse_1" class="accordion-collapse collapse" aria-labelledby="heading_1" data-bs-parent="#Historique_liste">
+                                        <div class="accordion-body row">
+                                            <div class="col-8 text-center">Nombre de couts</div>
+                                            <div class="col-4" style="color: #7BC2BE">10</div>
+                                            <div class="col-8 text-center">Type de victoire</div>
+                                            <div class="col-4" style="color: #7BC2BE">Echec</div>
+                                        </div>
+                                    </div>
+                        </div>-->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Retour</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="classementModal" tabindex="-1" aria-labelledby="ClassementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ClassementModalLabel">Classement des joueurs</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="Classement_liste" class="modal-body list-group">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Retour</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="supAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="supAccountModalLabel">Suppression du compte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Vous êtes sur le point de supprimer votre compte, il ne sera plus possible de retourner en arrière après ça.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="startSupprimerAccount()">Supprimer le compte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+    const ActionIDDOM = {
+        HOME        : 0,
+        CONNECTION  : 1,
+        GAME        : 2,
+    }
+
+    let lastActionDom = ActionIDDOM.HOME;
+    let el = document.getElementById("root_board");
+
+    //===== DOM ELEM
+    let dom_nav_profil              = document.getElementById("profil");
+    let dom_nav_authentification    = document.getElementById("authentification");
+    let dom_nav_jouer               = document.getElementById("jouer");
+    let dom_nav_deco              = document.getElementById("Déconnexion");
+
+    let dom_game                = document.getElementById("main_container_chess");
+    let dom_connection          = document.getElementById("connection");
+    let dom_createAccount       = document.getElementById("createAccount");
+    let dom_home                = document.getElementById("homepage");
+
+    let dom_menu_games           = document.getElementById("connected");
+    let dom_list_parties         = document.getElementById("listElem");
+    let dom_bg_parallax          = document.getElementById("BG_connected");
+    let dom_account              = document.getElementById("account");
+    let dom_OnlyProfil           = document.getElementById("OnlyProfil");
+
+
+    let isAuthentified = false;
+    let gameManager = undefined;
+    let swap_crea_con = true;
+
+    function cleanEverything(){
+        dom_game.style.cssText                      = "display : none !important";
+        dom_home.style.display                      = "none";
+
+        dom_nav_profil.style.display                = "none";
+        dom_nav_authentification.style.display      = "none";
+        dom_nav_deco.style.display                  = "none";
+        dom_nav_jouer.style.display                 = "block";
+
+        dom_createAccount.style.display         = "none";
+        //dom_list_parties.style.cssText          = "display : none !important";
+        dom_bg_parallax.style.display           = "none";
+        dom_account.style.display               = "none";
+        dom_menu_games.style.display            = "none";
+        dom_OnlyProfil.style.display            = "none";
+    }
+    function startHomePage(){
+        cleanEverything();
+
+        console.log("HOME PAGE STARTED !");
+
+        if(isAuthentified){
+            dom_nav_profil.style.display            = "block";
+            dom_connection.style.display            = "none";
+            dom_createAccount.style.display         = "none";
+            dom_nav_deco.style.display              = "block";
+        }else{
+            dom_nav_authentification.style.display  = "block";
+            dom_connection.style.display            = "block";
+        }
+        dom_home.style.display                      = "block";
+    }
+
+    //========== Profil Function
+    function startProfil(){
+        cleanEverything();
+        console.log("PROFIL STARTED !");
+
+        //UI TO MODIFY
+        let profil_name         = document.getElementById("nameCoonected");
+        let profil_description  = document.getElementById("profil_description");
+        let profil_elo          = document.getElementById("profil_elo");
+
+        dom_account.style.display           = "block";
+        dom_OnlyProfil.style.display        = "block";
+        dom_nav_deco.style.display          = "block";
+    }
+
+    function startEditProfil(){
+        console.log("EDIT PROFIL STARTED !");
+        let description = document.getElementById("profil_description");
+        let name        = document.getElementById("nameCoonected");
+
+    }
+    function startEditImage(){
+        console.log("EDIT IMAGE STARTED !");
+        let img = document.getElementById("profilPic");
+    }
+
+
+    function getSvgVictory(v){
+        return ((v)? "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" class=\"bi bi-star-fill\" viewBox=\"0 0 16 16\">\n" +
+            "     <path d=\"M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z\"/>\n" +
+            "     </svg>\n" : " <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" class=\"bi bi-x-circle\" viewBox=\"0 0 16 16\">\n" +
+            "<path d=\"M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z\"/>\n" +
+            "<path d=\"M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z\"/>\n" +
+            "</svg>");
+    }
+    function addElementHistoryList(victory,NomDuJoueur,NombreDePoints, NombreDeCouts, TypeDeVictoire){
+        let history = document.getElementById("Historique_liste");
+        let nb_el = history.children.length+1;
+
+        history.innerHTML+=
+            "<div class=\"accordion-item\">\n" +
+            "                            <h2 class=\"accordion-header\" id=\"heading_"+ nb_el +"\">\n" +
+            "                                        <button class=\"accordion-button collapsed\" type=\"button\" aria-expanded=\"false\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse_"+ nb_el +"\" aria-controls=\"collapse_"+nb_el+"\">\n" +
+            "                                            <div class=\"float-end history_btn_res "+ ((victory)? "win" : "loose") +"\">\n" +
+            "                                                <p>"+ ((victory)? "+" : "-") + NombreDePoints +"</p>\n" + getSvgVictory(victory) +
+            "                                            </div>\n" +
+            "                                            <div class=\"playerName ps-5\">\n" +
+            "                                                <h4>"+ NomDuJoueur +"</h4>\n" +
+            "                                            </div>\n" +
+            "                                        </button>\n" +
+            "                                    </h2>\n" +
+            "                            <div id=\"collapse_"+ nb_el +"\" class=\"accordion-collapse collapse\" aria-labelledby=\"heading_"+ nb_el +"\" data-bs-parent=\"#Historique_liste\">\n" +
+            "                                        <div class=\"accordion-body row\">\n" +
+            "                                            <div class=\"col-8 text-center\">Nombre de couts</div>\n" +
+            "                                            <div class=\"col-4\" style=\"color: #7BC2BE\">"+ NombreDeCouts +"</div>\n" +
+            "                                            <div class=\"col-8 text-center\">Type de victoire</div>\n" +
+            "                                            <div class=\"col-4\" style=\"color: #7BC2BE\">"+ TypeDeVictoire +"</div>\n" +
+            "                                        </div>\n" +
+            "                                    </div>\n" +
+            "                        </div>"
+    }
+    function addElementClassementList(nbTrophee, NomDuJoueur){
+        let classement = document.getElementById("Classement_liste");
+
+        classement.innerHTML+= "<div class=\"list-group-item py-4\" style=\"font-size: x-large\">\n" +
+            "                            <div class=\"trophee_classement float-start me-5\">\n" +
+            "                                <p>"+ nbTrophee +"</p>\n" +
+            "                                <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" class=\"bi bi-trophy-fill\" viewBox=\"0 0 16 16\">\n" +
+            "                                    <path d=\"M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z\"/>\n" +
+            "                                </svg>\n" +
+            "                            </div>\n" +
+            "                            <p>"+ NomDuJoueur + "</p>\n" +
+            "                        </div>";
+    }
+
+    function startPreference(){
+        console.log("EDIT PREFERENCE !");
+
+    }
+    function startSupprimerAccount(){
+        console.log("EDIT SUPPRIMER ACCOUNT !");
+
+    }
+
+    //========== Game functions
+    function startGame_local(){
+        dom_game.style.cssText = "display : flex !important";
+        if(!el) {
+            //Game construction and game launch
+            let board = new Board();
+            gameManager = new GameManager(board);
+            gameManager.initDOMElementsRoot(document.getElementById("game"));
+            gameManager.start();
+        }else{
+            console.log(el);
+        }
+    }
+
+    function startMenuGameOnline(){
+        cleanEverything();
+        dom_menu_games.style.display            = "block";
+        dom_list_parties.style.cssText          = "display : block !important";
+        dom_bg_parallax.style.display           = "block";
+    }
+
+    function startJouer(){
+        cleanEverything();
+        dom_nav_jouer.style.display = "none";
+
+        console.log("JOUER STARTED !");
+
+        if(isAuthentified){
+            startMenuGameOnline();
+        }else{
+            startGame_local();
+        }
+    }
+
+    function joinParty(name){
+
+    }
+
+    //========== Online
+    function addUIParty(){
+        let name = document.getElementById("partyName").value;
+        document.getElementById("party").innerHTML += createAParty(name);
+    }
+    function createAParty(name){
+        return "<li class=\"list-group-item\">\n" + name + "\n" +
+            "                <button type=\"button\" class=\"btn btn-primary float-end p-4\" onclick=\"joinParty(" + name + ")\">Rejoindre</button>\n" +
+            "            </li>"
+    }
+
+    //========== Connections functions
+    function startDeconnexion(){
+        isAuthentified = false;
+        startHomePage();
+    }
+
+    function startForgotPsw(){
+        console.log("FORGOT PSW !");
+    }
+
+    function swapConnectionCreation(){
+        if(swap_crea_con){
+            dom_connection.style.display    = "none";
+            dom_createAccount.style.display = "block";
+        }else{
+            dom_connection.style.display    = "block";
+            dom_createAccount.style.display = "none";
+        }
+        swap_crea_con = !swap_crea_con;
+    }
+
+    function startConnexion(){
+        console.log("CONNEXION START !");
+
+        let email               = document.getElementById("mail").value;
+        let mdp                 = document.getElementById("psw").value;
+        let seSouvenirDeMoi     = document.getElementById("souvenir").checked;
+
+        console.log(" ====== CONNEXION ====== ");
+        console.log(email);
+        console.log(mdp);
+        console.log(seSouvenirDeMoi);
+        console.log(" ======================= ");
+
+
+        //Si bonne connection
+        isAuthentified = true;
+        startHomePage();
+    }
+    function startCreerUnCompte(){
+        console.log("CREATE ACCOUNT START !");
+
+
+        let email               = document.getElementById("account_mail").value;
+        let mdp                 = document.getElementById("account_psw").value;
+        let pseudo              = document.getElementById("account_pseudo").value;
+
+        console.log(" ====== CREATION ====== ");
+        console.log(email);
+        console.log(mdp);
+        console.log(pseudo);
+        console.log(" ======================= ");
+    }
+
+    window.onload = startHomePage;
+</script>
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+:root{
+    --colorPrimary              : #A4C2AF7B;
+    --colorPrimaryVariant       : #C2AF7B;
+    --colorPrimaryVariantDark   : #695b35;
+    --colorSecondary            : #7BC2BE;
+    --colorSecondaryLight            : #89a8a4;
+    --colorSecondaryVariant     : #326966;
+    --colorTertiary             : #C27BA0;
+    --colorTertiaryVariant      : #741B47;
+
+    --dark-color-1 : #454545;
+
+    --colorActivePlayer_dark        : #741B47;
+    --colorActivePlayer_light       : rgb(218, 179, 188);
+    --colorActivePlayer             : #C27BA0;
+
+    --gradient-magenta : linear-gradient(var(--colorTertiary), var(--colorTertiaryVariant) 75%);
+    --gradient-primary : linear-gradient(to top, var(--colorPrimaryVariant), var(--colorPrimaryVariantDark) 75%);
+
+    --gradient-game : linear-gradient(145deg,rgba(40,37,37,1) 29%, rgba(69,69,69,1) 80%, rgba(116,27,71,1) 98%);
+    --gradient-blue : linear-gradient(145deg, var(--colorSecondary), var(--colorSecondaryVariant) 75%);
+
+    --box-shadox-blue-active : 4px 4px 8px var(--colorSecondary), -4px -4px 8px var(--colorSecondaryVariant);
+    --box-shadox-magenta-active : 4px 4px 8px var(--colorTertiary), -4px -4px 8px var(--colorTertiaryVariant);
+    --box-shadow-hard : 4px 6px 12px rgba(0,0,0,0.4);
+    --gradient-bgimg : linear-gradient(transparent, #0a1e1d);
+
+
+    --padding-a-small : 12px;
+    --espace-section : 30px;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+header{
+    color: white;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    max-width: 100%;
+    z-index: 10;
+}
+
+#neubar {
+    background: var(--gradient-blue);
+    box-shadow: var(--box-shadow-hard);
+    font-family: 'Permanent Marker', cursive;
+}
+
+.nav-item .active {
+    border-radius: 6px;
+    background: var(--colorSecondaryVariant);
+    box-shadow: var(--box-shadox-blue-active);
+}
+
+#neubar .dropdown-menu a:hover {
+    color: var(--colorSecondary);
+}
+
+#neubar .nav-item {
+    margin : auto 4px;
+    cursor: pointer;
+}
+
+#neubar a {
+    padding-left  : var(--padding-a-small);
+    padding-right : var(--padding-a-small);
+    color: white;
+    fill: white;
+}
+
+#neubar a:hover {
+    color: var(--colorSecondary);
+    fill: var(--colorSecondary);
+}
+
+#neubar .dropdown-menu {
+    background : #545454
+}
+
+
+
+#title{
+    color: var(--colorSecondary);
+}
+
+#description{
+    color: white;
+}
+
+
+#main_container{
+    padding-top: 60px;
+}
+
+#main_container_chess {
+    width: 100vw;
+    height: 100vh;
+    /*max-width: 100%;*/
+    margin: 0;
+    padding: 0;
+
+    /*background: var(--gradient-game);*/
+
+    background-image: radial-gradient( circle farthest-corner at 22.4% 21.7%, var(--colorPrimaryVariant) 0%, var(--colorPrimaryVariantDark) 100.2% );
+}
+
+div#homepage button {
+    background-color: var(--colorPrimaryVariant);
+    color: white;
+}
+
+
+.parallaxBG {
+    background-image: var(--gradient-bgimg), url("../res/drawable/img/rendu_raycast.png");
+    width: 100vw;
+    height: 100vh;
+    max-width: calc(var(--bs-gutter-x) + 100%);
+    padding: 0;
+
+    margin-right : calc(var(--bs-gutter-x) * -.5);
+    margin-left  : calc(var(--bs-gutter-x) * -.5);
+
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    border-bottom : solid var(--espace-section) var(--colorPrimaryVariant);
+}
+
+#homepage section#connection{
+
+}
+
+
+
+/*https://bbbootstrap.com/snippets/bootstrap-5-profile-card-animation-74461039*/
+#account #profil_card .card {
+    width: 350px;
+    background-color: #efefef;
+    border: none;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+#account #profil_card .image img {
+    transition: all 0.5s
+}
+
+#account #profil_card .card:hover .image img {
+    transform: scale(1.5)
+}
+
+#account #profil_card .btn {
+    height: 140px;
+    width: 140px;
+    border-radius: 50%
+}
+
+#account #profil_card .name {
+    font-size: 22px;
+    font-weight: bold
+}
+
+#account #profil_card .idd {
+    font-size: 14px;
+    font-weight: 600
+}
+
+#createAccount #profil_card .idd1 {
+    font-size: 12px
+}
+
+#account #profil_card .number {
+    font-size: 22px;
+    font-weight: bold
+}
+
+#account #profil_card .follow {
+    font-size: 12px;
+    font-weight: 500;
+    color: #444444
+}
+
+#account #profil_card .btn1 {
+    height: 40px;
+    width: 150px;
+    border: none;
+    background-color: #000;
+    color: #aeaeae;
+    font-size: 15px
+}
+
+#account #profil_card .text span {
+    font-size: 13px;
+    color: #545454;
+    font-weight: 500
+}
+
+#account #profil_card hr .new1 {
+    border: 1px solid
+}
+
+#account #profil_card .join {
+    font-size: 14px;
+    color: #a0a0a0;
+    font-weight: bold
+}
+
+#account #profil_card .date {
+    background-color: #ccc
+}
+
+#account #profil_card svg{
+    fill: var(--colorPrimaryVariant);
+}
+
+
+#connected{
+    background-color: var(--colorSecondaryLight);
+    height: auto;
+    box-sizing: border-box;
+}
+
+#connected h2{
+    color: var(--colorSecondaryVariant);
+}
+
+#menubtn button.menubtn{
+    padding: 20px;
+    color: white;
+    background : var(--gradient-magenta);
+    font-size: x-large;
+    width: 100%;
+}
+
+div.parallaxBG.parallaxBGBis{
+    background-image: var(--gradient-bgimg), url("../res/drawable/img/render.png");
+    border-bottom-color: var(--colorTertiary);
+    margin: 0;
+    max-width: 100%;
+    height: 50vh;
+}
+
+#listElem svg{
+    fill: var(--colorTertiary);
+}
+
+.btn_option {
+    background-color: var(--colorTertiary);
+    color: white;
+    padding: 10px 5px 10px 5px;
+}
+
+/*
+.btn_option:hover {
+    background-color: var(--colorTertiary);
+    color: white;
+}
+
+.btn_option:focus {
+    background-color: var(--colorTertiary);
+    color: white;
+}
+*/
+#main_container_chess .offcanvas-backdrop{
+    max-width: 100%;
+}
+
+.modal-title{
+    font-family: 'Permanent Marker', cursive !important;
+}
+
+
+
+
+.history_btn_res{
+    position: relative;
+    display: flex;
+    text-align: center;
+
+}
+
+.history_btn_res.win {
+    fill: var(--colorPrimaryVariant);
+}
+
+.history_btn_res.loose {
+    fill: var(--colorTertiary);
+}
+
+.history_btn_res p{
+    position: absolute;
+    left: 0;
+    top: 50%;
+
+    width: 100%;
+    height: auto;
+
+    transform: translateY(-50%);
+    color: black;
+    font-family: 'Permanent Marker', cursive;
+    font-weight: bold;
+    z-index: 1;
+
+    font-size: x-large;
+}
+
+.trophee_classement{
+    position: relative;
+    fill: var(--colorTertiary);
+    text-align: center;
+
+    display: inline-block;
+}
+
+.trophee_classement p{
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: auto;
+    transform: translateY(-50%);
+
+    font-family: 'Permanent Marker', cursive;
+    color: var(--colorTertiaryVariant);
+}

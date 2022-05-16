@@ -1,0 +1,80 @@
+#main_container{
+    margin: auto;
+}
+
+#game{
+    width : 50%;
+    height: 50%;
+    margin  : auto;
+
+    flex: 1;
+}
+
+
+/*Players UI MAJ*/
+#gameUI {
+    justify-content: space-evenly;
+    flex: 1;
+}
+
+#gameUI div.activePlayer {
+    color: var(--colorActivePlayer_dark);
+}
+
+#gameUI div.activePlayer div.card{
+    background-color: var(--colorActivePlayer_light);
+    border-color: var(--colorActivePlayer);
+    border-width: 2px;
+}
+
+
+#game #gameboard div.col-10.col-sm-11{
+    padding: 0 !important;
+}
+
+#boardWrapper{
+    width  : 100%;
+    height : 100%;
+}
+
+#boardWrapper #canvasWrapper {
+    width  : 100%;
+    height : 100%;
+    position: relative;
+}
+
+
+/*Transform screen*/
+#boardWrapper #canvasWrapper #transform_screen {
+    top     : 0;
+    left    : 12px;
+    background-color: rgba(0,0,0,0.5);
+    border  : solid 2px black;
+    width   : calc(100% - 24px);
+    height  : 100%;
+    z-index: 1;
+    position: absolute;
+    color: white;
+}
+
+#boardWrapper #canvasWrapper #transform_screen .message{
+    color: var(--colorSecondary);
+}
+
+
+/*End screen*/
+#boardWrapper #canvasWrapper #end_screen {
+    top: 0;
+    left: 12px;
+    background-color: rgba(0,0,0,0.5);
+    border: solid 2px black;
+    width   : calc(100% - 24px);
+    height : 100%;
+    z-index: 1;
+    position: absolute;
+    color: white;
+}
+
+#boardWrapper #canvasWrapper #end_screen .mid{
+    color: var(--colorSecondary);
+}

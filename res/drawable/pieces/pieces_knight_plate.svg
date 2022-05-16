@@ -1,0 +1,8 @@
+<svg version="1.1" viewBox="0.0 0.0 189.5721784776903 259.23359580052494" id="style" fill="#ffffff" stroke="#000000" stroke-width="8.0" stroke-linecap="square" stroke-miterlimit="10" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+    <clipPath id="p.0">
+        <path d="m0 0l189.57217 0l0 259.23358l-189.57217 0l0 -259.23358z" clip-rule="nonzero"/>
+    </clipPath>
+    <g clip-path="url(#p.0)">
+        <path stroke-linejoin="round" stroke-linecap="butt" d="m8.660105 234.35564l172.25197 0l0 16.409454l-172.25197 0z" fill-rule="evenodd"/>
+    </g>
+</svg>
