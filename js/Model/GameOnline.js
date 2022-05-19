@@ -296,13 +296,18 @@ export class GameManagerOnline extends GameManager {
     }
 
     downloadFilePlayer1(player) {
-        let url = downloadFileOnline(player);
-        this.setImage(0, url);
+        let obj = this;
+        let url = downloadFileOnline(player).then
+        (function(url){
+            obj.setImage(0, url)
+        });
     }
 
     downloadFilePlayer2(player) {
-        let url = downloadFileOnline(player);
-        this.setImage(1, url);
+        let obj = this;
+        let url = downloadFileOnline(player).then
+        (function(url){
+            obj.setImage(1, url)});
     }
 
 
