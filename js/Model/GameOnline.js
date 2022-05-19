@@ -6,7 +6,7 @@ import {Board, main_color_piece} from "./Board.js";
 import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./Piece.js";
 import {Player} from "./Player.js";
 import {MovementPiece, Movement} from "./Movement.js";
-import{downloadFile} from "../../res/firebasStorage.js";
+import{downloadFile} from "../../firebasStorage.js";
 
 //Coups en DB plus légers
 class DB_Shots{
