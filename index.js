@@ -10,8 +10,7 @@ import {
     onValue,
     set,
     remove,
-    update,
-    get
+    update
 } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
 
 import {downloadFile, deleteProfilePicture, uploadFile} from "./firebasStorage.js";
@@ -420,61 +419,14 @@ function startProfil(){
     dom_nav_deco.style.display               = "block";
 }
 
-function startCreerUnCompte(){
-    const auth = getAuth();
-    console.log("CREATE ACCOUNT START !");
-
-
-    let mail               = document.getElementById("account_mail").value;
-    let mdp                 = document.getElementById("account_psw").value;
-    let pseudo              = document.getElementById("account_pseudo").value;
-
-    console.log(" ====== CREATION ====== ");
-    console.log(mail);
-    console.log(mdp);
-    console.log(pseudo);
-    console.log(" ======================= ");
-    createUserWithEmailAndPassword(auth, mail, mdp)
-        .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            console.log(user.uid);
-            writeUserData(user.uid, mail, pseudo, mdp);
-            isAuthentified = true;
-            startHomePage();
-        })
-        .catch((error) => {
-            console.log("ERROR");
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // ..
-        });
+//Changer place holder pour l'édition du profil
+function loadPlaceHolder(){
+    dom_edit_pseudo.setAttribute('placeholder', dom_profil_name.innerText);
+    dom_edit_description.setAttribute('placeholder', dom_profil_description.innerText);
 }
 
-function writeUserData(userId, mail, pseudo, mdp) {
-    const db = getDatabase();
-    set(ref(db, 'users/' + userId), {
-        pseudo: pseudo,
-        elo: 1000,
-        email: mail,
-        bio: "Un g@meur avec un @ à la place du a",
-        password: mdp
-    });
-}
-
-function deleteAccount(){
-    auth.currentUser.delete()
-}
-
-function deleteInformationAccount(){
-    const user = auth.currentUser.uid;
-    const refUser = ref(db, "users/"+user);
-    remove(refUser);
-    deleteAccount();
-    deleteProfilePicture(user);
-    isAuthentified = false;
-    //TODO HIDE THE MODAL
-    startHomePage();
+//Sauvegarder les données de changement de préférences
+function startEditPreference(){
 }
 
 function displayHistory(){
@@ -522,10 +474,11 @@ function addParty(){
             piece1: "",
             piece2: ""
         });
-        //TODO PASS THIS 2 PARAMETERS
-        document.getElementById("party").innerHTML += createAParty(name, userId);
-        let buttonJoinParty = document.getElementById(userId);
-        buttonJoinParty.addEventListener("click", function(){joinParty(name, userId)});
+
+        gameNameOnlineActivity = userId;
+        cleanEverything();
+        dom_nav_jouer.style.display     = "none";
+        startGame_online();
     }, {
         onlyOnce: true
     });
@@ -585,14 +538,6 @@ function refreshListParty(){
     });
 }
 
-function appliedChangementPseudo(){
-    let pseudonyme = document.getElementById("changePseudoInput").value;
-    const userId = getAuth().currentUser.uid;
-    update(ref(db, 'users/' + userId), {
-        pseudo: pseudonyme
-    });
-    document.getElementById("nameCoonected").innerText = pseudonyme;
-}
 let file;
 function readURL(input) {
     if (input.files && input.files[0]) {

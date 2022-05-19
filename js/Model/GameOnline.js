@@ -6,7 +6,8 @@ import {Board, main_color_piece} from "./Board.js";
 import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./Piece.js";
 import {Player} from "./Player.js";
 import {MovementPiece, Movement} from "./Movement.js";
-import{downloadFile} from "../../res/firebasStorage.js";
+import{downloadFileOnline} from "../../firebasStorage.js";
+import{deleteRoom, writeHistory, writeEloWinOrLoss, takePseudoAndElo} from "../../index.js";
 
 //Coups en DB plus légers
 class DB_Shots{
@@ -54,8 +55,8 @@ export class GameManagerOnline extends GameManager {
         //Loading Pseudo player
         this.initialiseDataPlayer();
         //Loading Avatar Image
-        this.downloadFilePlayer1(player1);
-        this.downloadFilePlayer2(player2);
+        this.downloadFilePlayer1(this.player1);
+        this.downloadFilePlayer2(this.player2);
 
 
         //Clear the board
@@ -188,17 +189,17 @@ export class GameManagerOnline extends GameManager {
             if (this.playerIndex == 1) {
                 //Set the data in DB for all players
                 let eloDiff = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player2, true);
-                addHistoryGame(this.player2, this.nbTurn, "win", this.pseudoPlayer1, eloDiff);
+                this.addHistoryGame(this.player2, this.nbTurn, "win", this.pseudoPlayer1, eloDiff);
 
                 let eloDiff2 = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player1, false);
-                addHistoryGame(this.player1, this.nbTurn, "loose", this.pseudoPlayer2, eloDiff2);
+                this.addHistoryGame(this.player1, this.nbTurn, "loose", this.pseudoPlayer2, eloDiff2);
             } else {
                 //Set the data in DB for all players
                 let eloDiff = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player1, true);
-                addHistoryGame(this.player1, this.nbTurn, "win", this.pseudoPlayer2, eloDiff);
+                this.addHistoryGame(this.player1, this.nbTurn, "win", this.pseudoPlayer2, eloDiff);
 
                 let eloDiff2 = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player2, false);
-                addHistoryGame(this.player2, this.nbTurn, "loose", this.pseudoPlayer1, eloDiff2);
+                this.addHistoryGame(this.player2, this.nbTurn, "loose", this.pseudoPlayer1, eloDiff2);
             }
         }
         this.shotsToPerform.clear();
@@ -224,6 +225,19 @@ export class GameManagerOnline extends GameManager {
 
     //Initialiser les données des deux joueurs (appel lecture DB)
     initialiseDataPlayer() {
+        let obj = this;
+        takePseudoAndElo(this.player1,  (pseudo, elo) =>{
+            obj.pseudoPlayer1   = pseudo;
+            obj.eloPlayer1      = elo;
+            obj.players[0].UI_setName(pseudo);
+
+        });
+        takePseudoAndElo(this.player2,(pseudo, elo) =>{
+            obj.pseudoPlayer2   = pseudo;
+            obj.eloPlayer2      = elo;
+            obj.players[1].UI_setName(pseudo);
+
+        });
     }
 
     //Quand un joueur ennemi va jouer un coup
@@ -238,8 +252,8 @@ export class GameManagerOnline extends GameManager {
     }
 
 
-    setNameRoomRef(nameRoomRef) {
-        this.nameRoomRef = nameRoomRef;
+    setNameRoomRef(nameRoom) {
+        this.roomNameRef = nameRoom;
     }
 
     initialiseDataBase() {
@@ -273,28 +287,35 @@ export class GameManagerOnline extends GameManager {
         }
 
         if (winner) {
-            database.getReference().child("users").child(player).child("elo").setValue(eloWinner + eloWin);
+            writeEloWinOrLoss(player, eloWinner + eloWin);
             return eloWin;
         } else {
-            database.getReference().child("users").child(player).child("elo").setValue(eloLooser - eloLoose);
+            writeEloWinOrLoss(player, eloLooser - eloLoose);
             return -eloLoose;
         }
     }
 
     downloadFilePlayer1(player) {
-        //Get all player 1 element
+        let url = downloadFileOnline(player);
+        this.setImage(0, url);
     }
 
     downloadFilePlayer2(player) {
-        //Get all player 2 element
+        let url = downloadFileOnline(player);
+        this.setImage(1, url);
     }
 
 
     addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff) {
         //Save the finish game instance
+        let today = new Date();
+        let idHistory = "" + today.getDay() + "" + today.getMonth() + "" + today.getFullYear() + "" + today.getHours() + ":"+ today.getMinutes() + ":" + today.getSeconds();
+        writeHistory(idHistory, player, eloDiff, haveWin, nbCoup, opponent);
+
     }
 
     deleteRoomsInformation() {
+        deleteRoom(this.roomNameRef);
         //Delete the room
     }
 

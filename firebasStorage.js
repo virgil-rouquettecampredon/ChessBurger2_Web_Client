@@ -42,6 +42,21 @@ export function downloadFile(uid) {
         });
 }
 
+export function downloadFileOnline(uid) {
+    const pathReference = ref(storage, 'images/' + uid + '.jpg');
+    console.log(pathReference);
+    let url = getDownloadURL(pathReference);
+    url.then(function (url) {
+        console.log(url);
+    })
+        .catch((error) => {
+            console.log("Aucune photo de profil");
+        });
+    return url;
+}
+
+
+
 export async function uploadFile(uid, file) {
     console.log(file);
     const storage = getStorage();
