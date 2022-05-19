@@ -4,9 +4,17 @@
 // Import the functions you need from the SDKs you need
 import {initializeApp} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
 import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
-import { getDatabase, ref, onValue, set, remove, child} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+import {
+    getDatabase,
+    ref,
+    onValue,
+    set,
+    remove,
+    update,
+    get
+} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
 
-import {downloadFile, deleteProfilePicture} from "./res/firebasStorage.js";
+import {downloadFile, deleteProfilePicture, uploadFile} from "./firebasStorage.js";
 
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -220,7 +228,7 @@ function addParty(){
             player1: userId,
             player2: "",
             turn: 1,
-            elo:snapshot.val()['elo'] ,
+            ranking:snapshot.val()['elo'] ,
             gameName: name,
             gameMode: "Normal",
             piece1: "",
@@ -228,9 +236,108 @@ function addParty(){
         });
         //TODO PASS THIS 2 PARAMETERS
         document.getElementById("party").innerHTML += createAParty(name, userId);
+        let buttonJoinParty = document.getElementById(userId);
+        buttonJoinParty.addEventListener("click", function(){joinParty(name, userId)});
     }, {
         onlyOnce: true
     });
+}
+//TODO PUT THE USER.UID PLAYER ONE IN ON HIDDEN
+function createAParty(name, user1) {
+    return "<li class=\"list-group-item\">\n" + name + "\n" +
+        "                <button id = '" + user1 + "' type=\"button\" class=\"btn btn-primary float-end p-4\"\">Rejoindre</button>\n" +
+        "            </li>"
+}
+
+function joinParty(name, user1){
+    console.log(name);
+    console.log(user1);
+
+    const userId = getAuth().currentUser.uid;
+    update(ref(db, 'rooms/' + user1), {
+        player2: userId
+    });
+
+
+    //TODO Start intent to enter to the game with UID PLAYER 1 + ID PLAYER (1 or 0)
+}
+
+function refreshListParty(){
+    console.log("===============REFRESH LIST PARTY=======================")
+    let listParty = document.getElementById("party");
+    listParty.innerHTML = "";
+
+    onValue(ref(db, 'rooms/'), (snapshot) => {
+        console.log("===============SNAPSHOT VAL=======================")
+        console.log(snapshot.val());
+
+        for (const snapshotKey in snapshot.val()) {
+            console.log("===============SNAPSHOT KEY=======================")
+            console.log(snapshotKey);
+            onValue(ref(db, 'rooms/' + snapshotKey), (snap) => {
+                console.log("===============SNAP VAL=======================")
+                console.log(snap.val());
+                if(snap.val()['player2'] == "") {
+                    console.log("CREATE A PARTY");
+                    console.log(snap.val()['gameName'] +" " + snapshotKey)
+                    listParty.innerHTML += createAParty(snap.val()['gameName'], snapshotKey);
+                    let buttonJoinParty = document.getElementById(snapshotKey);
+                    buttonJoinParty.addEventListener("click", function () {
+                        joinParty(snap.val()['gameName'], snapshotKey)
+                    });
+                }
+            });
+
+        }
+    }, {
+        onlyOnce: true
+    });
+}
+
+function startJouer() {
+    cleanEverything();
+    dom_nav_jouer.style.display = "none";
+    dom_nav_profil.style.display = "block";
+
+    console.log("JOUER STARTED !");
+
+    if (isAuthentified) {
+        startMenuGameOnline();
+        refreshListParty();
+    } else {
+        startGame_local();
+    }
+}
+
+function appliedChangementPseudo(){
+    let pseudonyme = document.getElementById("changePseudoInput").value;
+    const userId = getAuth().currentUser.uid;
+    update(ref(db, 'users/' + userId), {
+        pseudo: pseudonyme
+    });
+    document.getElementById("nameCoonected").innerText = pseudonyme;
+}
+let file;
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        let btn_pp_ut = document.getElementById("buttonValidPP");
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            console.log(e);
+            file = input.files[0];
+            //file = reader.result;
+            //console.log(file);
+            btn_pp_ut.classList.remove("disabled");
+        };
+        btn_pp_ut.classList.add("disabled");
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function upload(){
+    let profilPic = document.getElementById("profilPic");
+    const user = getAuth().currentUser.uid;
+    uploadFile(user, file);
 }
 
 const logginButton = document.getElementById("logginButton");
@@ -241,6 +348,11 @@ const history = document.getElementById("historyAction");
 const disconnectButton = document.getElementById("disconnectButton");
 const dissmissButton = document.getElementById("dissmissButton");
 const createGameButton = document.getElementById("createGameButton");
+const buttonJouer = document.getElementById("buttonJouer");
+const buttonEdited = document.getElementById("buttonValidPseudo");
+const ppimg = document.getElementById("ppimg");
+const buttonUploadPP = document.getElementById("buttonValidPP");
+
 logginButton.addEventListener("click", startConnexion);
 profilNavBar.addEventListener("click", startProfil);
 buttonCreateAccount.addEventListener("click", startCreerUnCompte);
@@ -249,3 +361,7 @@ history.addEventListener("click", displayHistory);
 disconnectButton.addEventListener("click", logout);
 dissmissButton.addEventListener("click", closeHistory);
 createGameButton.addEventListener("click", addParty);
+buttonJouer.addEventListener("click", startJouer);
+buttonEdited.addEventListener("click", appliedChangementPseudo);
+buttonUploadPP.addEventListener("click", upload);
+ppimg.addEventListener("change", function(){readURL(ppimg)});

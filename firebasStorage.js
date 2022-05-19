@@ -1,4 +1,10 @@
-import {getStorage, ref, getDownloadURL, deleteObject} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
+import {
+    getStorage,
+    ref,
+    getDownloadURL,
+    deleteObject,
+    uploadBytesResumable
+} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-storage.js";
 import {initializeApp} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
 import {getAuth} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 import {getDatabase} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
@@ -22,11 +28,11 @@ const auth = getAuth(app);
 const storage = getStorage();
 
 
-export function downloadFile(uid){
+export function downloadFile(uid) {
     const pathReference = ref(storage, 'images/' + uid + '.jpg');
     console.log(pathReference);
     let url = getDownloadURL(pathReference);
-    url.then(function(url){
+    url.then(function (url) {
         console.log(url);
         const profilPic = document.getElementById("profilPic");
         profilPic.src = url;
@@ -36,8 +42,35 @@ export function downloadFile(uid){
         });
 }
 
+export async function uploadFile(uid, file) {
+    console.log(file);
+    const storage = getStorage();
+    const storageRef = ref(storage, 'images/' + uid + '.jpg');
+    const metadata = {
+        contentType: 'image/jpeg'
+    }
+
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+    uploadTask.on("state_changed",
+        (snapshot) => {
+            const progress =
+                Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            console.log(progress);
+        },
+        (error) => {
+            alert(error);
+        },
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                const profilPic = document.getElementById("profilPic");
+                profilPic.src = downloadURL;
+            })});
+
+}
+
 //Delete file with uid in images folder
-export function deleteProfilePicture(uid){
+export function deleteProfilePicture(uid) {
     const pathReference = ref(storage, 'images/' + uid + '.jpg');
     console.log(pathReference);
     deleteObject(pathReference);
