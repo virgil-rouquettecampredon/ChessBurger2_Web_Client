@@ -245,7 +245,6 @@ function startGame_online() {
     board.clear(true);
     board.drawBoard();
 
-
     gameManager.roomNameRef = gameNameOnlineActivity;
     if (player == 0){
         gameManager.player1 = auth.currentUser.uid;
@@ -254,6 +253,9 @@ function startGame_online() {
     else{
         gameManager.player1 = gameNameOnlineActivity;
         gameManager.player2 = auth.currentUser.uid;
+
+        game.innerHTML      = "";
+        game_ui.innerHTML   = "";
         gameManager.start();
     }
 
@@ -267,6 +269,10 @@ function wait2Player(){
         if(snapshot.val() != ""){
             console.log("SECOND PLAYER JOIN THE GAME !")
             gameManager.player2 = snapshot.val();
+
+            game.innerHTML = "";
+            game_ui.innerHTML = "";
+
             gameManager.start();
             refUser.off();
         }

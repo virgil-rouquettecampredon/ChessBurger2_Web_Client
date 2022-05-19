@@ -59,8 +59,9 @@ export class GameManagerOnline extends GameManager {
         this.downloadFilePlayer2(this.player2);
 
 
-        //Clear the board
-        this.board.clear();
+        //Clear and draw the empty board
+        this.board.clear(true);
+        this.board.drawBoard();
 
         this.currentPlayer = this.players[this.playerIndex];
 
