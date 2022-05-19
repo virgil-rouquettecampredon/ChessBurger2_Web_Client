@@ -2,7 +2,7 @@
     GAME ONLINE BEHAVIORS
 ================================================================================== */
 import {GameManager} from "./Game.js";
-import {Board} from "./Board.js";
+import {Board, main_color_piece} from "./Board.js";
 import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./Piece.js";
 import {Player} from "./Player.js";
 import {MovementPiece, Movement} from "./Movement.js";
@@ -18,11 +18,14 @@ class DB_Shots{
 }
 
 //Gestionnaire de partie de jeu
-class GameManagerOnline extends GameManager {
-    constructor(context, board) {
-        super(context, board);
+export class GameManagerOnline extends GameManager {
+    constructor(board, name) {
+        super(board);
         this.shotsToPush = [];
         this.shotsToPerform = [];
+
+        this.players.push(new Player(name,main_color_piece[0]));
+        this.players.push(new Player("En attente",main_color_piece[1]));
     }
 
     //Déterminer si le joueur courrant est le premier joueur à jouer
@@ -32,7 +35,7 @@ class GameManagerOnline extends GameManager {
 
     //Changer un pseudo de joueur
     setPlayerDatas(id, pseudo) {
-        let p = players.get(id);
+        let p = players[id];
         p.UI_setName(pseudo);
     }
 
@@ -43,6 +46,9 @@ class GameManagerOnline extends GameManager {
 
     //Lancer la partie de jeu
     start() {
+        //Init the board
+        this.players = this.board.initGameInstances();
+
         //Initialise all DB structures for online managing
         this.initialiseDataBase();
         //Loading Pseudo player
@@ -55,10 +61,7 @@ class GameManagerOnline extends GameManager {
         //Clear the board
         this.board.clear();
 
-        //Init the board
-        this.players = this.board.initGameInstances();
-
-        this.currentPlayer = this.players.get(this.playerIndex);
+        this.currentPlayer = this.players[this.playerIndex];
 
         this.turnPlayerListerner();
 
@@ -76,12 +79,12 @@ class GameManagerOnline extends GameManager {
             for (let s of this.allShots.peek()) {
                 this.onCurrentPlayerPlay(new DB_Shots(s.startPos, s.endPos, s.IDTransformedPiece));
             }
-            SyncToDB();
+            this.SyncToDB();
         }
 
 
         //MAJ turn to play
-        this.isMyTurn = (this.playerIndex == (this.nbTurn % this.players.size()));
+        this.isMyTurn = (this.playerIndex == (this.nbTurn % this.players.length));
         //Stop game if needed
         this.gameStopped = !this.isMyTurn;
 
@@ -112,14 +115,16 @@ class GameManagerOnline extends GameManager {
         return false;
     }
 
+    SyncToDB(){}
+
     //Jouer les coups ennemis dans notre instance courrante de jeu
     playAllEnemyShots() {
         if (!this.shotsToPerform.length === 0) {
             if (this.shotsToPerform.length == 1) {
 
-                let startPos = this.shotsToPerform.get(0).startPosPlayerPlay;
-                let endPos = this.shotsToPerform.get(0).endPosPlayerPlay;
-                let idTransform = this.shotsToPerform.get(0).IDTransformedPiece;
+                let startPos = this.shotsToPerform[0].startPosPlayerPlay;
+                let endPos = this.shotsToPerform[0].endPosPlayerPlay;
+                let idTransform = this.shotsToPerform[0].IDTransformedPiece;
 
                 let c = this.board.getACase(startPos.x, startPos.y);
                 //Perform move
@@ -140,11 +145,11 @@ class GameManagerOnline extends GameManager {
                 //Perform transformation (if needed)
             } else {
                 //rock move
-                let startPos_king = this.shotsToPerform.get(0).startPosPlayerPlay;
-                let endPos_king = this.shotsToPerform.get(0).endPosPlayerPlay;
+                let startPos_king = this.shotsToPerform[0].startPosPlayerPlay;
+                let endPos_king = this.shotsToPerform[0].endPosPlayerPlay;
 
-                let startPos_tower = this.shotsToPerform.get(1).startPosPlayerPlay;
-                let endPos_tower = this.shotsToPerform.get(1).endPosPlayerPlay;
+                let startPos_tower = this.shotsToPerform[1].startPosPlayerPlay;
+                let endPos_tower = this.shotsToPerform[1].endPosPlayerPlay;
 
                 let start_case_tower = this.board.getACase(startPos_tower.x, startPos_tower.y);
 
@@ -172,7 +177,7 @@ class GameManagerOnline extends GameManager {
             //          Pat
             //          FF
 
-            this.currentPlayer = this.players.get(1 - this.playerIndex);
+            this.currentPlayer = this.players[1 - this.playerIndex];
 
             for (let p of players) {
                 this.computePossibleMvts(p);
@@ -208,6 +213,7 @@ class GameManagerOnline extends GameManager {
 
     //Initialiser l'image de profil du joueur ID
     setImage(id, uri) {
+        console.log(this.players);
         this.players[id].UI_setPorfilPicFromLocalFile(uri);
     }
 
@@ -294,23 +300,6 @@ class GameManagerOnline extends GameManager {
 
     //Function called to end a turn and sync datas to other players
     SyncToDB(shotsToPush, playerIndex) {
-        //Perform DATA BASES LOGIC on shotsToPush
-        //Inform all other players that the current player end his turn
-        /*if (shotsToPush.size() > 0) {
-            roomRef.child("piece1").setValue("" + shotsToPush[0].startPosPlayerPlay.x + "_" + shotsToPush[0].startPosPlayerPlay.y + "/" + shotsToPush[0].endPosPlayerPlay.x + "_" + shotsToPush[0].endPosPlayerPlay.y + "/" + shotsToPush[0].IDTransformedPiece);
-            if (shotsToPush.size() > 1) {
-                roomRef.child("piece2").setValue("" + shotsToPush[1].startPosPlayerPlay.x + "_" + shotsToPush[1].startPosPlayerPlay.y + "/" + shotsToPush[1].endPosPlayerPlay.x + "_" + shotsToPush[1].endPosPlayerPlay.y);
-            } else {
-                roomRef.child("piece2").setValue("");
-            }
-        }
-        if (playerIndex == 0) {
-            roomRef.child("turn").setValue(2);
-        } else {
-            roomRef.child("turn").setValue(1);
-        }
-
-        shotsToPush.clear();*/
     }
 }
 

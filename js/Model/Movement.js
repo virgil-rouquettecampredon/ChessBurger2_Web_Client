@@ -2,8 +2,7 @@
     MOVEMENT BEHAVIORS
     => A movement is a data structure that describe a displaccement on a 2D board
 ================================================================================== */
-import {Board} from "./Board.js";
-import {Piece} from "./Piece.js";
+import {ActionState} from "./Action.js";
 
 export class Position {
     constructor(x, y) {

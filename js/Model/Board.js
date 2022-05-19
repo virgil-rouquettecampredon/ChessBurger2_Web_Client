@@ -1,8 +1,20 @@
 /* ==================================================================================
     BOARD BEHAVIORS
 ================================================================================== */
-import {Bishop,Knight,King,Tower,Queen,Pawn} from "./Piece.js";
+import {Bishop,Knight,King,Tower,Queen,Pawn, Direction} from "./Piece.js";
+import {Player} from "./Player.js";
+import {Association_rock} from "./Game.js";
+import {Position} from "./Movement.js";
 
+
+import {
+    colorPrimaryVariant,
+    colorPrimaryVariantDark,
+    colorSecondary,
+    colorSecondaryVariant,
+    colorTertiary,
+    colorTertiaryVariant
+} from "./util.js"
 
 //All Appearances for special drawing on cases
 export let color_possiblepos       = colorPrimaryVariant;

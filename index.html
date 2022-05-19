@@ -24,7 +24,7 @@
     <link href="./css/menus.css" rel="stylesheet">
 
     <!-- ==================== JS ==================== -->
-    <script type="text/javascript" src="js/Model/util.js"></script>
+    <!--<script type="text/javascript" src="js/Model/util.js"></script>
     <script type="text/javascript" src="js/Model/Drawing.js"></script>
     <script type="text/javascript" src="js/Model/animator.js"></script>
     <script type="text/javascript" src="js/Model/Action.js"></script>
@@ -32,14 +32,14 @@
     <script type="text/javascript" src="js/Model/Piece.js"></script>
     <script type="text/javascript" src="js/Model/Player.js"></script>
     <script type="text/javascript" src="js/Model/Board.js"></script>
-    <script type="text/javascript" src="js/Model/Game.js"></script>
+    <script type="text/javascript" src="js/Model/Game.js"></script>-->
     <script type="module" src="index.js"></script>
 </head>
 
 <header>
     <nav class="navbar navbar-expand-sm navbar-light" id="neubar">
         <div class="container">
-            <a class="navbar-brand" href="#" onclick="startHomePage()">
+            <a id="homePageNAV_logo" class="navbar-brand" href="#">
                 <img src="./res/drawable/img/logo_chessburger_2.png" height="60"/>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
@@ -50,7 +50,7 @@
             <div class=" collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto ">
                     <li class="nav-item">
-                        <a class="nav-link mx-2" href="#" aria-current="page" onclick="startHomePage()">
+                        <a class="nav-link mx-2" href="#" aria-current="page" id="homePageNAV_home" >
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" class="bi bi-house"
                                  viewBox="0 0 16 16">
                                 <path fill-rule="evenodd"
@@ -94,6 +94,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
         crossorigin="anonymous"></script>
+
+
 
 <div id="main_container_chess" class="pt-5 d-flex justify-content-center align-content-center">
     <div class="mt-5 container justify-content-center align-content-center">
@@ -209,7 +211,7 @@
                                     Se souvenir de moi
                                 </label>
                             </div>
-                            <a onclick="startForgotPsw()" style="cursor: pointer" class="text-body">Mot de passe oublié
+                            <a id="forgot_psw" style="cursor: pointer" class="text-body">Mot de passe oublié
                                 ?</a>
                         </div>
 
@@ -217,8 +219,7 @@
                             <button type="button" id="logginButton" class="btn btn-lg"
                                     style="padding-left: 2.5rem; padding-right: 2.5rem;">Connexion
                             </button>
-                            <p class="small fw-bold mt-2 pt-1 mb-0">Vous n'avez pas de compte ? <a
-                                    onclick="swapConnectionCreation()" class="link-dark" style="cursor: pointer">Créer
+                            <p class="small fw-bold mt-2 pt-1 mb-0">Vous n'avez pas de compte ? <a id="swapButton" class="link-dark" style="cursor: pointer">Créer
                                 un compte</a></p>
                         </div>
 
@@ -264,8 +265,7 @@
                             <button type="button" id="buttonCreateAccount" class="btn btn-lg"
                                     style="padding-left: 2.5rem; padding-right: 2.5rem;">Creer le compte
                             </button>
-                            <p class="small fw-bold mt-2 pt-1 mb-0">Vous avez un compte ? <a
-                                    onclick="swapConnectionCreation()" class="link-dark" style="cursor: pointer">Se
+                            <p class="small fw-bold mt-2 pt-1 mb-0">Vous avez un compte ? <a id="swapButtonBis" class="link-dark" style="cursor: pointer">Se
                                 connecter</a></p>
                         </div>
 
@@ -287,7 +287,7 @@
                 <button type="button" class="btn btn-lg menubtn btn-block" href="#listElem">ONLINE</button>
             </div>
             <div class="my-3 fw-bold">
-                <button type="button" class="btn btn-lg menubtn btn-block" onclick="startGame_local()">LOCAL</button>
+                <button type="button" class="btn btn-lg menubtn btn-block" id="startGameLocal" >LOCAL</button>
             </div>
         </div>
         <div class="col-1"></div>
@@ -311,6 +311,13 @@
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
             </svg>
+        </p>
+
+        <p class="float-end ps-5" style="cursor: pointer; fill: #C27BA0;" id="refreshelem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+        </svg>
         </p>
     </h1>
     <ul id="party" class="list-group gap-5" style="width: 100%; font-size: x-large">
@@ -339,7 +346,7 @@
                         </span>
                     </div>
                     <div class=" d-flex mt-2">
-                        <button class="btn1 btn-dark" onclick="changePlaceholders()" data-bs-toggle="modal" data-bs-target="#ChangePseudoAccountModal">Editer</button>
+                        <button class="btn1 btn-dark" id="editProfil" data-bs-toggle="modal" data-bs-target="#ChangePseudoAccountModal">Editer</button>
                     </div>
                 </div>
             </div>
@@ -423,6 +430,8 @@
     </div>
 </div>
 
+
+
 <div class="modal fade" id="CreatePartyModal" tabindex="-1" aria-labelledby="CreatePartyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -443,7 +452,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="preferencesModal" tabindex="-1" aria-labelledby="preferenceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -456,13 +464,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" onclick="startPreference()">Sauvegarder les changements
+                <button type="button" class="btn btn-primary" id="preferences">Sauvegarder les changements
                 </button>
             </div>
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -504,7 +511,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="classementModal" tabindex="-1" aria-labelledby="ClassementModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -521,7 +527,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="supAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -535,15 +540,12 @@
             </div>
             <div id="modal-footer-deleteAccount" class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" id="buttonDeleteAccount" class="btn btn-primary">Supprimer le compte</button>
+                <button type="button" id="buttonDeleteAccount" class="btn btn-primary" data-bs-dismiss="modal">Supprimer le compte</button>
             </div>
         </div>
     </div>
 </div>
-
-
-
-    <div class="modal fade" id="ChangePPAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
+<div class="modal fade" id="ChangePPAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -563,8 +565,7 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="ChangePseudoAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
+<div class="modal fade" id="ChangePseudoAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -591,227 +592,74 @@
 
 
 <script type="text/javascript">
+    //==============================================================================================================
+    //Variables DOM
+    //Dom navbar
+    const dom_nav_profil              = document.getElementById("profil");
+    const dom_nav_authentification    = document.getElementById("authentification");
+    const dom_nav_jouer               = document.getElementById("jouer");
+    const dom_nav_deco                = document.getElementById("Déconnexion");
+    const dom_nav_homePage_logo       = document.getElementById("homePageNAV_logo");
+    const dom_nav_homePage_home       = document.getElementById("homePageNAV_home");
+
+    //Main Dom element
+    const dom_main_game                    = document.getElementById("main_container_chess");
+    const dom_main_home                    = document.getElementById("homepage");
+    const dom_main_menu_games              = document.getElementById("connected");
+    const dom_main_list_parties            = document.getElementById("listElem");
+    const dom_main_bg_parallax             = document.getElementById("BG_connected");
+    const dom_main_account                 = document.getElementById("account");
+    const dom_main_OnlyProfil              = document.getElementById("OnlyProfil");
+
+    const dom_connection              = document.getElementById("connection");
+    const dom_createAccount           = document.getElementById("createAccount");
 
 
-    const ActionIDDOM = {
-        HOME: 0,
-        CONNECTION: 1,
-        GAME: 2,
-    }
+    const dom_logginButton              = document.getElementById("logginButton");
+    const dom_profilNavBar              = document.getElementById("profilNavBar");
+    const dom_buttonCreateAccount       = document.getElementById("buttonCreateAccount");
+    const dom_buttonDeleteAccount       = document.getElementById("buttonDeleteAccount");
+    const dom_history                   = document.getElementById("historyAction");
+    const dom_disconnectButton          = document.getElementById("disconnectButton");
+    const dom_dissmissButton            = document.getElementById("dissmissButton");
+    const dom_createGameButton          = document.getElementById("createGameButton");
+    const dom_buttonJouer               = document.getElementById("buttonJouer");
+    const dom_buttonEdited              = document.getElementById("buttonValidPseudo");
+    const dom_ppimg                     = document.getElementById("ppimg");
+    const dom_buttonUploadPP            = document.getElementById("buttonValidPP");
+    const dom_forgot_psw                = document.getElementById("forgot_psw");
+    const dom_history_liste             = document.getElementById("Historique_liste");
+    const dom_classement_liste          = document.getElementById("Classement_liste");
+    const dom_button_swap               = document.getElementById("swapButton");
+    const dom_button_swap_bis           = document.getElementById("swapButtonBis");
+    const dom_button_game_local         = document.getElementById("startGameLocal");
+    const dom_button_edit_profil        = document.getElementById("editProfil");
+    const dom_button_edit_preference    = document.getElementById("preferences");
 
-    let lastActionDom = ActionIDDOM.HOME;
-    let el = document.getElementById("root_board");
+    const dom_edit_pseudo               = document.getElementById("changePseudoInput");
+    const dom_edit_description          = document.getElementById("changeDescriptionInput");
 
-    //===== DOM ELEM
-    let dom_nav_profil = document.getElementById("profil");
-    let dom_nav_authentification = document.getElementById("authentification");
-    let dom_nav_jouer = document.getElementById("jouer");
-    let dom_nav_deco = document.getElementById("Déconnexion");
-
-    let dom_game = document.getElementById("main_container_chess");
-    let dom_connection = document.getElementById("connection");
-    let dom_createAccount = document.getElementById("createAccount");
-    let dom_home = document.getElementById("homepage");
-
-    let dom_menu_games = document.getElementById("connected");
-    let dom_list_parties = document.getElementById("listElem");
-    let dom_bg_parallax = document.getElementById("BG_connected");
-    let dom_account = document.getElementById("account");
-    let dom_OnlyProfil = document.getElementById("OnlyProfil");
-
-
-    let game = document.getElementById("game");
-    let game_ui = document.getElementById("gameUI");
-
-
-    let isAuthentified = false;
-    let gameManager = undefined;
-    let swap_crea_con = true;
-
-    function cleanEverything() {
-        dom_game.style.cssText = "display : none !important";
-        dom_home.style.display = "none";
-
-        dom_nav_profil.style.display = "none";
-        dom_nav_authentification.style.display = "none";
-        dom_nav_deco.style.display = "none";
-        dom_nav_jouer.style.display = "block";
-
-        dom_createAccount.style.display = "none";
-        dom_list_parties.style.cssText = "display : none !important";
-        dom_bg_parallax.style.display = "none";
-        dom_account.style.display = "none";
-        dom_menu_games.style.display = "none";
-        dom_OnlyProfil.style.display = "none";
-    }
-
-    function startHomePage() {
-        cleanEverything();
-
-        console.log("HOME PAGE STARTED !");
-
-        if (isAuthentified) {
-            dom_nav_profil.style.display = "block";
-            dom_connection.style.display = "none";
-            dom_createAccount.style.display = "none";
-            dom_nav_deco.style.display = "block";
-        } else {
-            dom_nav_authentification.style.display = "block";
-            dom_connection.style.display = "block";
-        }
-        dom_home.style.display = "block";
-    }
-
-    //========== Profil Function
-
-    function startEditProfil() {
-        console.log("EDIT PROFIL STARTED !");
-        let description = document.getElementById("profil_description");
-        let name = document.getElementById("nameCoonected");
-
-    }
-
-    function startEditImage() {
-        console.log("EDIT IMAGE STARTED !");
-        let img = document.getElementById("profilPic");
-    }
+    const dom_profil_name               = document.getElementById("nameCoonected");
+    const dom_profil_elo                = document.getElementById("profil_elo");
+    const dom_profil_description        = document.getElementById("profil_description");
+    const dom_game_refresh              = document.getElementById("refreshelem");
 
 
-    function getSvgVictory(v) {
-        return ((v) ? "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" class=\"bi bi-star-fill\" viewBox=\"0 0 16 16\">\n" +
-            "     <path d=\"M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z\"/>\n" +
-            "     </svg>\n" : " <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" class=\"bi bi-x-circle\" viewBox=\"0 0 16 16\">\n" +
-            "<path d=\"M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z\"/>\n" +
-            "<path d=\"M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z\"/>\n" +
-            "</svg>");
-    }
+    //UIs où la partie de jeu sera mise
+    let game            = document.getElementById("game");
+    let game_ui         = document.getElementById("gameUI");
+    //==============================================================================================================
+    //Variables application
+    //Si la personne courrante est connectée
+    let isAuthentified      = false;
+    //Main gameManager
+    let gameManager         = undefined;
+    //Passer de création de compte à connection à un compte
+    let swap_crea_con       = true;
 
-    function addElementHistoryList(victory, NomDuJoueur, NombreDePoints, NombreDeCouts, TypeDeVictoire) {
-        let history = document.getElementById("Historique_liste");
-        let nb_el = history.children.length + 1;
-
-        history.innerHTML +=
-            "<div class=\"accordion-item\">\n" +
-            "                            <h2 class=\"accordion-header\" id=\"heading_" + nb_el + "\">\n" +
-            "                                        <button class=\"accordion-button collapsed\" type=\"button\" aria-expanded=\"false\" data-bs-toggle=\"collapse\" data-bs-target=\"#collapse_" + nb_el + "\" aria-controls=\"collapse_" + nb_el + "\">\n" +
-            "                                            <div class=\"float-end history_btn_res " + ((victory) ? "win" : "loose") + "\">\n" +
-            "                                                <p>" + ((victory) ? "+" : "") + NombreDePoints + "</p>\n" + getSvgVictory(victory) +
-            "                                            </div>\n" +
-            "                                            <div class=\"playerName ps-5\">\n" +
-            "                                                <h4>" + NomDuJoueur + "</h4>\n" +
-            "                                            </div>\n" +
-            "                                        </button>\n" +
-            "                                    </h2>\n" +
-            "                            <div id=\"collapse_" + nb_el + "\" class=\"accordion-collapse collapse\" aria-labelledby=\"heading_" + nb_el + "\" data-bs-parent=\"#Historique_liste\">\n" +
-            "                                        <div class=\"accordion-body row\">\n" +
-            "                                            <div class=\"col-8 text-center\">Nombre de couts</div>\n" +
-            "                                            <div class=\"col-4\" style=\"color: #7BC2BE\">" + NombreDeCouts + "</div>\n" +
-            "                                            <div class=\"col-8 text-center\">Type de victoire</div>\n" +
-            "                                            <div class=\"col-4\" style=\"color: #7BC2BE\">" + TypeDeVictoire + "</div>\n" +
-            "                                        </div>\n" +
-            "                                    </div>\n" +
-            "                        </div>"
-    }
-
-    function addElementClassementList(nbTrophee, NomDuJoueur) {
-        let classement = document.getElementById("Classement_liste");
-
-        classement.innerHTML += "<div class=\"list-group-item py-4\" style=\"font-size: x-large\">\n" +
-            "                            <div class=\"trophee_classement float-start me-5\">\n" +
-            "                                <p>" + nbTrophee + "</p>\n" +
-            "                                <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"64\" height=\"64\" class=\"bi bi-trophy-fill\" viewBox=\"0 0 16 16\">\n" +
-            "                                    <path d=\"M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z\"/>\n" +
-            "                                </svg>\n" +
-            "                            </div>\n" +
-            "                            <p>" + NomDuJoueur + "</p>\n" +
-            "                        </div>";
-    }
-
-    function startPreference() {
-        console.log("EDIT PREFERENCE !");
-
-    }
-
-    function startSupprimerAccount() {
-        console.log("EDIT SUPPRIMER ACCOUNT !");
-
-    }
-
-    //========== Game functions
-    function startGame_local() {
-        dom_game.style.cssText = "display : flex !important";
-        game.innerHTML = "";
-        game_ui.innerHTML = "";
-        if (!el) {
-            //Game construction and game launch
-            let board = new Board();
-            gameManager = new GameManager(board);
-            gameManager.initDOMElementsRoot(document.getElementById("game"));
-            gameManager.start();
-        } else {
-            console.log(el);
-        }
-    }
-
-    function startMenuGameOnline() {
-        dom_menu_games.style.display = "block";
-        dom_list_parties.style.cssText = "display : block !important";
-        dom_bg_parallax.style.display = "block";
-    }
-
-
-    //========== Online
-
-
-    //========== Connections functions
-    function startForgotPsw() {
-        console.log("FORGOT PSW !");
-    }
-
-    function swapConnectionCreation() {
-        if (swap_crea_con) {
-            dom_connection.style.display = "none";
-            dom_createAccount.style.display = "block";
-        } else {
-            dom_connection.style.display = "block";
-            dom_createAccount.style.display = "none";
-        }
-        swap_crea_con = !swap_crea_con;
-    }
-
-
-    /*Pour changer PP*/
-    let btn_name_ut         = document.getElementById("buttonValidPseudo");
-    let pseudo_input        = document.getElementById("changePseudoInput");
-    let description_input   = document.getElementById("changeDescriptionInput");
-    let profilPic           = document.getElementById("profilPic");
-    let pseudo              = document.getElementById("nameCoonected");
-    let description         = document.getElementById("profil_description");
-
-    let file_img_src = "";
-
-    /*btn_pp_ut.addEventListener('click', function(){
-        console.log("ON MAJ PP");
-        console.log("img : " + file_img_src);
-        profilPic.src = file_img_src;
-    })*/
-
-    btn_name_ut.addEventListener('click', function(){
-        console.log("ON MAJ NOM");
-        console.log("nom : " + pseudo_input.value);
-        console.log("description : " + description_input.value);
-
-        pseudo.innerText = pseudo_input.value;
-        description.innerText = description_input.value;
-    })
-
-
-    function changePlaceholders(){
-        pseudo_input.setAttribute('placeholder', pseudo.innerText);
-        description_input.setAttribute('placeholder', description.innerText);
-    }
-
-    window.onload = startHomePage;
+    let player = 0;
+    let gameNameOnlineActivity = 0;
+    //==============================================================================================================
 </script>
 </body>
 

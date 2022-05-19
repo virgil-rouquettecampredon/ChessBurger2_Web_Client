@@ -1,6 +1,7 @@
 /* ==================================================================================
     PLAYER BEHAVIORS
 ================================================================================== */
+import {getDrawableSRCNormalImg} from "./Drawing.js";
 
 export class Player {
     constructor(pseudo, color) {
@@ -177,6 +178,8 @@ export class Player {
         this.UI.profilPic.src = src;
     }
     UI_draw(elem){
+        console.log("IM DRAWN !");
+        console.log(this);
         elem.appendChild(this.UI.playerCard);
     }
 }

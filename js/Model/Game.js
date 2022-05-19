@@ -1,7 +1,11 @@
 /* ==================================================================================
     GAME BEHAVIORS
 ================================================================================== */
-import {Board} from "./Board.js";
+import {Position} from "./Movement.js";
+import {getLinearCursorPosition} from "./util.js";
+import {TransformPieces} from "./Board.js";
+import {Bishop,Knight,Tower,Queen} from "./Piece.js";
+
 
 //TODO CHECK THAT
 export let ANIMATION_PIECE                 = false;
@@ -55,6 +59,7 @@ export class GameManager {
     }
 
     initDOMElementsRoot(elem) {
+        console.log("DOM ELEM ROOT !");
         this.constructPlayerLayout(elem);
     }
 
@@ -261,6 +266,7 @@ export class GameManager {
 
         //Maj UI for better understanding in interface of current player
         this.majLayoutPlayerTurn(this.currentPlayer);
+
         //Next we can compute the special rock movement
         this.computeRockInGame(this.currentPlayer);
 
@@ -926,6 +932,10 @@ export class GameManager {
     }
 
     constructPlayerLayout(elem) {
+        console.log("CONSTRUCT PLAYER LAYOUT");
+        console.log(elem);
+        console.log(this.players);
+
         for (let p of this.players) {
             p.UI_draw(elem);
         }

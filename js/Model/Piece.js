@@ -1,7 +1,10 @@
 /* ==================================================================================
     PIECE BEHAVIORS
 ================================================================================== */
-import {MovementPiece} from "./Movement.js";
+import {MovementPiece, Movement} from "./Movement.js";
+import {ComposedDrawing, getDrawableSRC} from "./Drawing.js";
+import {Position} from "./Movement.js";
+import {ActionDeplacement, ActionEat} from "./Action.js";
 
 export const Direction = {
     UP : 0,

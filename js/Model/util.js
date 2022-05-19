@@ -2,10 +2,8 @@
 export let colorPrimary = "#A4C2AF7B";
 export let colorPrimaryVariant = "#C2AF7B";
 export let colorPrimaryVariantDark = "#695b35";
-
 export let colorSecondary = "#7BC2BE";
 export let colorSecondaryVariant = "#326966";
-
 export let colorTertiary = "#C27BA0";
 export let colorTertiaryVariant = "#741B47";
 
