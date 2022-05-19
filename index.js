@@ -96,7 +96,7 @@ function appliedChangementUserInformation(){
         bio: biographie
     });
     document.getElementById("nameCoonected").innerText = pseudonyme;
-     dom_profil_description.innerText = biographie;
+    dom_profil_description.innerText = biographie;
 }
 
 
