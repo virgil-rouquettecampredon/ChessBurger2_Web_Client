@@ -3,13 +3,13 @@
 ================================================================================== */
 
 
-const AnimationWay = {
+export const AnimationWay = {
     NORMAL : 0,
     EASEOUT : 0,
     EASEINOUT : 0,
 }
 
-const AnimationFunction = {
+export const AnimationFunction = {
     LERP : 0,
     SINLERP : 1,
     CIRC : 2,
@@ -77,7 +77,7 @@ function makeEaseInOut(timing) {
 }
 
 
-class AnimatorBoard {
+export default class AnimatorBoard {
 
     //Going from 0 to duration
     constructor(duration, board) {

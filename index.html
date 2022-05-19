@@ -304,7 +304,7 @@
                         </span>
                     </div>
                     <div class=" d-flex mt-2">
-                        <button class="btn1 btn-dark" data-bs-toggle="modal" data-bs-target="#ChangePseudoAccountModal">Editer</button>
+                        <button class="btn1 btn-dark" onclick="changePlaceholders()" data-bs-toggle="modal" data-bs-target="#ChangePseudoAccountModal">Editer</button>
                     </div>
                 </div>
             </div>
@@ -527,6 +527,10 @@
                     <div>
                         <label for="changePseudoInput" class="form-label">pseudo</label>
                         <input class="form-control form-control-lg" id="changePseudoInput" type="text" aria-label=".form-control-lg example">
+
+                        <label for="changeDescriptionInput" class="form-label">description</label>
+                        <input class="form-control form-control-lg" id="changeDescriptionInput" type="text" aria-label=".form-control-lg example">
+
                     </div>
                 </div>
                 <div id="modal-footer-changepseudo" class="modal-footer">
@@ -761,8 +765,10 @@
     let btn_pp_ut           = document.getElementById("buttonValidPP");
     let btn_name_ut         = document.getElementById("buttonValidPseudo");
     let pseudo_input        = document.getElementById("changePseudoInput");
+    let description_input   = document.getElementById("changeDescriptionInput");
     let profilPic           = document.getElementById("profilPic");
     let pseudo              = document.getElementById("nameCoonected");
+    let description         = document.getElementById("profil_description");
 
     let file_img_src = "";
     function readURL(input) {
@@ -786,10 +792,17 @@
     btn_name_ut.addEventListener('click', function(){
         console.log("ON MAJ NOM");
         console.log("nom : " + pseudo_input.value);
-
+        console.log("description : " + description_input.value);
 
         pseudo.innerText = pseudo_input.value;
+        description.innerText = description_input.value;
     })
+
+
+    function changePlaceholders(){
+        pseudo_input.setAttribute('placeholder', pseudo.innerText);
+        description_input.setAttribute('placeholder', description.innerText);
+    }
 
     window.onload = startHomePage;
 </script>

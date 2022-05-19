@@ -1,24 +1,26 @@
 /* ==================================================================================
     BOARD BEHAVIORS
 ================================================================================== */
+import {Bishop,Knight,King,Tower,Queen,Pawn} from "./Piece.js";
+
 
 //All Appearances for special drawing on cases
-let color_possiblepos       = colorPrimaryVariant;
-let color_possiblepos_eat   = colorTertiaryVariant;
-let color_confirmation      = colorPrimaryVariantDark;
-let color_menaced           = colorTertiary;
-let color_rock              = "#A6F1A6";
+export let color_possiblepos       = colorPrimaryVariant;
+export let color_possiblepos_eat   = colorTertiaryVariant;
+export let color_confirmation      = colorPrimaryVariantDark;
+export let color_menaced           = colorTertiary;
+export let color_rock              = "#A6F1A6";
 
-let color_case_white        = colorSecondary;
-let color_case_black        = colorSecondaryVariant;
+export let color_case_white        = colorSecondary;
+export let color_case_black        = colorSecondaryVariant;
 
-let main_color_piece                = ["#FFFFFF", "#000000"];
-let border_color_piece              = ["#000000", "#000000"];
-let color_piece_second              = ["#000000", "#FFFFFF"];
-let plate_color_piece               = ["#FFFFFF","#FFFFFF"];
+export let main_color_piece                = ["#FFFFFF", "#000000"];
+export let border_color_piece              = ["#000000", "#000000"];
+export let color_piece_second              = ["#000000", "#FFFFFF"];
+export let plate_color_piece               = ["#FFFFFF","#FFFFFF"];
 
 
-const TransformPieces = {
+export const TransformPieces = {
     TOWER : 1,
     QUEEN : 2,
     BISHOP : 3,
@@ -60,7 +62,7 @@ function createGameCSS() {
         "}";
 }
 
-class Case {
+export class Case {
     constructor(bounds, color, col,row) {
         this.bounds = bounds;
 
@@ -158,7 +160,7 @@ class Case {
     }
 }
 
-class Board {
+export class Board {
 //class Board extends HTMLElement {
     constructor() {
         //super();

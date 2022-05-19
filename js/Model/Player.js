@@ -2,7 +2,7 @@
     PLAYER BEHAVIORS
 ================================================================================== */
 
-class Player {
+export class Player {
     constructor(pseudo, color) {
         this.piecesPlayer   = new Map();
         this.rockPieces     = new Map();

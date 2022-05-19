@@ -1,16 +1,16 @@
+// ====== UTILS FUNCTIONS
+export let colorPrimary = "#A4C2AF7B";
+export let colorPrimaryVariant = "#C2AF7B";
+export let colorPrimaryVariantDark = "#695b35";
 
-let colorPrimary = "#A4C2AF7B";
-let colorPrimaryVariant = "#C2AF7B";
-let colorPrimaryVariantDark = "#695b35";
+export let colorSecondary = "#7BC2BE";
+export let colorSecondaryVariant = "#326966";
 
-let colorSecondary = "#7BC2BE";
-let colorSecondaryVariant = "#326966";
-
-let colorTertiary = "#C27BA0";
-let colorTertiaryVariant = "#741B47";
+export let colorTertiary = "#C27BA0";
+export let colorTertiaryVariant = "#741B47";
 
 
-function getLinearCursorPosition(canvas, event) {
+export function getLinearCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -33,8 +33,3 @@ Array.prototype.peek = function () {
 Array.prototype.add = function (el) {
     this.push(el);
 };
-
-
-//Array.prototype.remove = function (el){
-//    this.filter((val) => val !== el);
-//}

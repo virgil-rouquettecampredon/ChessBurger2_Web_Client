@@ -3,13 +3,13 @@
     => An action is related to a movement and describe a condition for being valid
 ================================================================================== */
 
-const ActionState = {
+export const ActionState = {
     VALID       : 1,
     INVALID     : 2,
     STILLGOOD   : 3
 }
 
-class ActionDeplacement {
+export class ActionDeplacement {
     constructor() {}
 
     isValidated(caseToCheck) {
@@ -21,7 +21,7 @@ class ActionDeplacement {
     }
 }
 
-class ActionEat{
+export class ActionEat{
     constructor(piece) {
         this.piece = piece;
     }

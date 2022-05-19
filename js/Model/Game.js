@@ -1,15 +1,16 @@
 /* ==================================================================================
     GAME BEHAVIORS
 ================================================================================== */
+import {Board} from "./Board.js";
 
 //TODO CHECK THAT
-let ANIMATION_PIECE                 = false;
-let animation_duration              = .5;
+export let ANIMATION_PIECE                 = false;
+export let animation_duration              = .5;
 
-let affichage                       = false;
+export let affichage                       = false;
 
 
-class Shot {
+export class Shot {
     constructor(pieceConcerned, startPos, endPos, eatedPiece, majAff, firstMoove) {
         this.pieceConcerned = pieceConcerned;
         this.startPos = startPos;
@@ -23,7 +24,7 @@ class Shot {
     }
 }
 
-class Association_rock {
+export class Association_rock {
     constructor(p, posPieceToRockWith, p1, p2) {
         this.p1 = p1;
         this.p2 = p2;
@@ -32,8 +33,7 @@ class Association_rock {
     }
 }
 
-
-class GameManager {
+export class GameManager {
     constructor(board) {
         this.board = board;
         this.players = [];
@@ -162,7 +162,7 @@ class GameManager {
                             console.log(pMoved);
 
                             //We need to check if the movement need an upgrade treatment
-                            if (c.is_end_case && pMoved.canBeTransformed()) {
+                            if (c.is_end_case && pMoved.canBeTransformed() && pMoved.possessor === obj.currentPlayer) {
                                 //Launch the upgrade treatment
                                 obj.transformAPiece(pMoved, obj.lastPosPreSelected);
                                 obj.lastPosPreSelected = undefined;
@@ -579,7 +579,7 @@ class GameManager {
             obj.gameStopped = false;
 
             //We need to check if the movement need an upgrade treatment
-            if (end_case.is_end_case && moved.canBeTransformed()) {
+            if (end_case.is_end_case && moved.canBeTransformed() && moved.possessor === obj.currentPlayer) {
                 //Launch the upgrade treatment
                 obj.transformAPiece(moved, end);
             } else {

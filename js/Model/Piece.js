@@ -1,8 +1,9 @@
 /* ==================================================================================
     PIECE BEHAVIORS
 ================================================================================== */
+import {MovementPiece} from "./Movement.js";
 
-const Direction = {
+export const Direction = {
     UP : 0,
     DOWN : 1,
     LEFT : 2,
@@ -10,7 +11,7 @@ const Direction = {
 }
 
 
-class Piece {
+export class Piece {
 
     constructor(player) {
         if(this.constructor === Movement){
@@ -108,7 +109,7 @@ class Piece {
 }
 
 /*============= CHESS PIECES =============*/
-class  Bishop extends Piece{
+export class Bishop extends Piece{
     constructor(player, color_fill, color_plate,color_stroke, color_elements) {
         super(player);
         this.appearance.addLayer(getDrawableSRC("pieces_bishop.svg"), color_fill,color_stroke);
@@ -127,7 +128,7 @@ class  Bishop extends Piece{
     }
 }
 
-class King extends Piece {
+export class King extends Piece {
     constructor(player, color_fill, color_plate, color_stroke, color_elements) {
         super(player);
         this.appearance.addLayer(getDrawableSRC("pieces_king.svg"), color_fill, color_stroke);
@@ -153,7 +154,7 @@ class King extends Piece {
     }
 }
 
-class Knight extends Piece{
+export class Knight extends Piece{
     constructor(player, color_fill, color_plate, color_stroke) {
         super(player);
         this.appearance.addLayer(getDrawableSRC("pieces_knight.svg"), color_fill,color_stroke);
@@ -174,7 +175,7 @@ class Knight extends Piece{
     }
 }
 
-class Pawn extends Piece {
+export class Pawn extends Piece {
 
     constructor(player, color_fill,color_plate, color_stroke, direction) {
         super(player);
@@ -232,7 +233,7 @@ class Pawn extends Piece {
     }
 }
 
-class Queen extends Piece {
+export class Queen extends Piece {
     constructor(player, color_fill, color_plate, color_stroke) {
         super(player);
         this.appearance.addLayer(getDrawableSRC("pieces_queen.svg"), color_fill, color_stroke);
@@ -254,7 +255,7 @@ class Queen extends Piece {
 
 }
 
-class Tower extends Piece {
+export class Tower extends Piece {
     constructor(player, color_fill,color_plate, color_stroke) {
         super(player);
         this.appearance.addLayer(getDrawableSRC("pieces_tower.svg"), color_fill, color_stroke);

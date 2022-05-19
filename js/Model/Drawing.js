@@ -21,20 +21,20 @@ function requestCORSIfNotSameOrigin(img, url) {
 }
 
 
-function getDrawableSRC(stringName) {
+export function getDrawableSRC(stringName) {
     let curFolder = imagePathFolderName + "pieces/";
     //console.log("DRAWING SRC REQUEST : " + curFolder+stringName);
     return curFolder + stringName;
 }
 
-function getDrawableSRCNormalImg(stringName) {
+export function getDrawableSRCNormalImg(stringName) {
     let curFolder = imagePathFolderName + "img/";
     return curFolder + stringName;
 }
 
 
 
-class LayerDrawing {
+export class LayerDrawing {
     constructor(drawableSRC, fillcolor, strokecolor) {
         this.src            = drawableSRC;
         this.fillcolor      = fillcolor;
@@ -115,7 +115,7 @@ function getSVGContents(inputString){
     return svgDOM.innerHTML
 }
 
-class ComposedDrawing {
+export class ComposedDrawing {
 
     constructor() {
         this.ID = cpt_elements;

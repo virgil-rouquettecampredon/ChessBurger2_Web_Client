@@ -2,9 +2,10 @@
     MOVEMENT BEHAVIORS
     => A movement is a data structure that describe a displaccement on a 2D board
 ================================================================================== */
+import {Board} from "./Board.js";
+import {Piece} from "./Piece.js";
 
-class Position {
-
+export class Position {
     constructor(x, y) {
         this.x = x ?? 0;
         this.y = y ?? 0;
@@ -24,7 +25,7 @@ class Position {
     }
 }
 
-class Movement{
+export class Movement{
 
     constructor(action, posStart, incrementation) {
         if(this.constructor === Movement){
@@ -37,7 +38,7 @@ class Movement{
     }
 }
 
-class MovementPiece extends Movement {
+export class MovementPiece extends Movement {
 
     constructor(action, posStart, incrementation, cpt_mvt_performed, canStillMove) {
         super(action, posStart, incrementation);
