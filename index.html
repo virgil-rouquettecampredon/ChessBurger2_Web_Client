@@ -289,7 +289,7 @@
             <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
             <div class="card p-4">
                 <div class=" image d-flex flex-column justify-content-center align-items-center">
-                    <img id="profilPic" class="rounded-circle" onclick="startEditImage()" src="./res/drawable/img/avatar.png" height="100" width="100" />
+                    <img id="profilPic" class="rounded-circle" data-bs-toggle="modal" data-bs-target="#ChangePPAccountModal" src="./res/drawable/img/avatar.png" height="100" width="100" />
                     <span class="name mt-5 pb-5" id="nameCoonected">Dark Virgil</span>
                     <div class="d-flex flex-row justify-content-center align-items-center my-3">
                         <span id="profil_elo" class="number">1069
@@ -304,7 +304,7 @@
                         </span>
                     </div>
                     <div class=" d-flex mt-2">
-                        <button class="btn1 btn-dark" onclick="startEditProfil()">Editer</button>
+                        <button class="btn1 btn-dark" data-bs-toggle="modal" data-bs-target="#ChangePseudoAccountModal">Editer</button>
                     </div>
                 </div>
             </div>
@@ -488,6 +488,50 @@
                 <div id="modal-footer-deleteAccount" class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="button" id="buttonDeleteAccount" class="btn btn-primary" >Supprimer le compte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="ChangePPAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ChangePPAccountModalLabel">Choisir une photo de profil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="ppimg" class="form-label">Veuillez choisir un fichier local</label>
+                        <input class="form-control form-control-lg" id="ppimg" onchange="readURL(this)" type="file">
+                    </div>
+                </div>
+                <div id="modal-footer-changepp" class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" id="buttonValidPP" data-bs-dismiss="modal" class="btn btn-primary">Valider le changement</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ChangePseudoAccountModal" tabindex="-1" aria-labelledby="supAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ChangePseudoAccountModalLabel">Changer de nom d'utilisateur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="changePseudoInput" class="form-label">pseudo</label>
+                        <input class="form-control form-control-lg" id="changePseudoInput" type="text" aria-label=".form-control-lg example">
+                    </div>
+                </div>
+                <div id="modal-footer-changepseudo" class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" id="buttonValidPseudo" data-bs-dismiss="modal" class="btn btn-primary">Valider le changement</button>
                 </div>
             </div>
         </div>
@@ -711,6 +755,41 @@
         }
         swap_crea_con = !swap_crea_con;
     }
+
+
+    /*Pour changer PP*/
+    let btn_pp_ut           = document.getElementById("buttonValidPP");
+    let btn_name_ut         = document.getElementById("buttonValidPseudo");
+    let pseudo_input        = document.getElementById("changePseudoInput");
+    let profilPic           = document.getElementById("profilPic");
+    let pseudo              = document.getElementById("nameCoonected");
+
+    let file_img_src = "";
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                file_img_src = e.target.result;
+                btn_pp_ut.classList.remove("disabled");
+            };
+            btn_pp_ut.classList.add("disabled");
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    btn_pp_ut.addEventListener('click', function(){
+        console.log("ON MAJ PP");
+        console.log("img : " + file_img_src);
+        profilPic.src = file_img_src;
+    })
+
+    btn_name_ut.addEventListener('click', function(){
+        console.log("ON MAJ NOM");
+        console.log("nom : " + pseudo_input.value);
+
+
+        pseudo.innerText = pseudo_input.value;
+    })
 
     window.onload = startHomePage;
 </script>
