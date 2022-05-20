@@ -434,10 +434,13 @@ export class Board {
     }
 
     //Init the game (players and pieces), need to be called by the manager
-    initGameInstances() {
+    initGameInstances(p1,p2) {
         let players = [];
-        players.push(new Player("WHITE", main_color_piece[0]));
-        players.push(new Player("BLACK", main_color_piece[1]));
+        let n_p1 = p1 ?? "WHITE";
+        let n_p2 = p2 ?? "BLACK";
+
+        players.push(new Player(n_p1, main_color_piece[0]));
+        players.push(new Player(n_p2, main_color_piece[1]));
         players[0].playerIndex = 0;
         players[1].playerIndex = 1;
 

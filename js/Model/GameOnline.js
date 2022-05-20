@@ -20,13 +20,15 @@ class DB_Shots{
 
 //Gestionnaire de partie de jeu
 export class GameManagerOnline extends GameManager {
-    constructor(board, name) {
+    constructor(board) {
         super(board);
         this.shotsToPush = [];
         this.shotsToPerform = [];
 
-        this.players.push(new Player(name,main_color_piece[0]));
-        this.players.push(new Player("En attente",main_color_piece[1]));
+
+        //Pour indiquer si la DB a déjà été init ou non
+        this.initDB = false;
+        this.gameStopped = true;
     }
 
     //Déterminer si le joueur courrant est le premier joueur à jouer
@@ -34,10 +36,61 @@ export class GameManagerOnline extends GameManager {
         this.playerIndex = 0;
     }
 
-    //Changer un pseudo de joueur
-    setPlayerDatas(id, pseudo) {
-        let p = players[id];
-        p.UI_setName(pseudo);
+    setPlayerOneInformations(uid, init) {
+        console.log("============ SET PLAYER ONE INFO ==============");
+        if(!this.initDB) {
+            this.initialiseDataBase();
+            this.initDB = true;
+        }
+        this.player1 = uid;
+
+        //On charge ensuite toutes les informations importantes de lancement de partie
+        //Récupération de l'élo et du pseudo
+        let obj = this;
+        takePseudoAndElo(this.player1,  (pseudo, elo) =>{
+            obj.pseudoPlayer1   = pseudo;
+            obj.eloPlayer1      = elo;
+
+            console.log("ON VIENT DE CHARGER LES DONNEES DU J1");
+            console.log(pseudo);
+            console.log(elo);
+
+            if(init){
+                obj.initParty();
+            }
+            if (obj.players[0]) {
+                obj.players[0].UI_setName(pseudo);
+            }
+            console.log("   => PLAYER 1 SET");
+        });
+
+        //Récupération de la photo de profil
+        this.downloadFilePlayer1(this.player1);
+        console.log("============ SET PLAYER ONE INFO END ==============");
+    }
+    setPlayerTwoInformations(uid, init) {
+        console.log("============ SET PLAYER TWO INFO ==============");
+        if(!this.initDB) {
+            this.initialiseDataBase();
+            this.initDB = true;
+        }
+        this.player2 = uid;
+
+        //On charge ensuite toutes les informations importantes de lancement de partie
+        //Récupération de l'élo et du pseudo
+        let obj = this;
+        takePseudoAndElo(this.player2,(pseudo, elo) =>{
+            obj.pseudoPlayer2   = pseudo;
+            obj.eloPlayer2      = elo;
+
+            if(init) obj.initParty();
+            if(obj.players[1]) obj.players[1].UI_setName(pseudo);
+            console.log("   => PLAYER 2 SET");
+        });
+
+        //Récupération de la photo de profil
+        this.downloadFilePlayer2(this.player2);
+        console.log("============ SET PLAYER TWO INFO END ==============");
     }
 
     //Déterminer l'index du joueur courrant
@@ -45,26 +98,39 @@ export class GameManagerOnline extends GameManager {
         this.playerIndex = id;
     }
 
-    //Lancer la partie de jeu
-    start() {
-        //Init the board
-        this.players = this.board.initGameInstances();
+    initParty(){
+        console.log(" ========== INIT PARTY ========");
+        console.log(this);
+        console.log(this.pseudoPlayer1);
+        console.log(this.pseudoPlayer2);
 
-        //Initialise all DB structures for online managing
-        this.initialiseDataBase();
-        //Loading Pseudo player
-        this.initialiseDataPlayer();
-        //Loading Avatar Image
-        this.downloadFilePlayer1(this.player1);
-        this.downloadFilePlayer2(this.player2);
+        let n_p1 = this.pseudoPlayer1 ?? "En attente";
+        let n_p2 = this.pseudoPlayer2 ?? "En attente";
 
+
+        //Init the board with players informations
+        this.players = this.board.initGameInstances(n_p1,n_p2);
 
         //Clear and draw the empty board
         this.board.clear(true);
         this.board.drawBoard();
+        console.log(" ========== INIT PARTY END ========");
+    }
+
+    //Lancer la partie de jeu
+    start() {
+        this.gameStopped = false;
+
+        //Made before
+        ////Initialise all DB structures for online managing
+        //this.initialiseDataBase();
+        ////Loading Pseudo player
+        //this.initialiseDataPlayer();
+        ////Loading Avatar Image
+        //this.downloadFilePlayer1(this.player1);
+        //this.downloadFilePlayer2(this.player2);
 
         this.currentPlayer = this.players[this.playerIndex];
-
         this.turnPlayerListerner();
 
         if (this.startANewTurn()) {
@@ -215,7 +281,7 @@ export class GameManagerOnline extends GameManager {
 
     //Initialiser l'image de profil du joueur ID
     setImage(id, uri) {
-        console.log(this.players);
+        console.log("SET IMAGE : " + id);
         this.players[id].UI_setPorfilPicFromLocalFile(uri);
     }
 
@@ -231,13 +297,11 @@ export class GameManagerOnline extends GameManager {
             obj.pseudoPlayer1   = pseudo;
             obj.eloPlayer1      = elo;
             obj.players[0].UI_setName(pseudo);
-
         });
         takePseudoAndElo(this.player2,(pseudo, elo) =>{
             obj.pseudoPlayer2   = pseudo;
             obj.eloPlayer2      = elo;
             obj.players[1].UI_setName(pseudo);
-
         });
     }
 
@@ -310,7 +374,6 @@ export class GameManagerOnline extends GameManager {
         (function(url){
             obj.setImage(1, url)});
     }
-
 
     addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff) {
         //Save the finish game instance

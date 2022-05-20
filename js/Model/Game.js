@@ -58,11 +58,6 @@ export class GameManager {
         this.nbTurn = 0;
     }
 
-    initDOMElementsRoot(elem) {
-        console.log("DOM ELEM ROOT !");
-        this.constructPlayerLayout(elem);
-    }
-
     /**
      * ======== For launch and play a game ========
      **/

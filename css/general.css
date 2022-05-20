@@ -19,11 +19,14 @@
 
     --gradient-game : linear-gradient(145deg,rgba(40,37,37,1) 29%, rgba(69,69,69,1) 80%, rgba(116,27,71,1) 98%);
     --gradient-blue : linear-gradient(145deg, var(--colorSecondary), var(--colorSecondaryVariant) 75%);
-
+    --gradient-gray : linear-gradient(315deg, #5b6467 0%, #8b939a 74%);
     --box-shadox-blue-active : 4px 4px 8px var(--colorSecondary), -4px -4px 8px var(--colorSecondaryVariant);
     --box-shadox-magenta-active : 4px 4px 8px var(--colorTertiary), -4px -4px 8px var(--colorTertiaryVariant);
     --box-shadow-hard : 4px 6px 12px rgba(0,0,0,0.4);
     --gradient-bgimg : linear-gradient(transparent, #0a1e1d);
+
+
+    --gradient-bg-profil : linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
 
 
     --padding-a-small : 12px;
@@ -35,6 +38,14 @@ html {
     overflow-x: hidden;
 }
 
+body{
+    /*background-color: #000000;
+    background-image: linear-gradient(315deg, #000000 0%, #414141 74%);*/
+
+    background-image: var(--gradient-bg-profil);
+    /*background: var(--gradient-gray);*/
+}
+
 header{
     color: white;
     display: block;
@@ -42,7 +53,6 @@ header{
     top: 0;
     left: 0;
     right: 0;
-
     max-width: 100%;
     z-index: 10;
 }
@@ -141,14 +151,17 @@ div#homepage button {
 }
 
 
-
+#account{
+    height: 100vh;
+}
 /*https://bbbootstrap.com/snippets/bootstrap-5-profile-card-animation-74461039*/
 #account #profil_card .card {
     width: 350px;
-    background-color: #efefef;
+    background-color: var(--colorTertiary);
     border: none;
     cursor: pointer;
     transition: all 0.5s;
+    color: white;
 }
 
 #account #profil_card .image img {
@@ -162,12 +175,12 @@ div#homepage button {
 #account #profil_card .btn {
     height: 140px;
     width: 140px;
-    border-radius: 50%
+    border-radius: 50%;
 }
 
 #account #profil_card .name {
-    font-size: 22px;
-    font-weight: bold
+    font-size: xx-large;
+    font-weight: bold;
 }
 
 #account #profil_card .idd {
@@ -176,7 +189,7 @@ div#homepage button {
 }
 
 #createAccount #profil_card .idd1 {
-    font-size: 12px
+    font-size: 12px;
 }
 
 #account #profil_card .number {
@@ -187,21 +200,29 @@ div#homepage button {
 #account #profil_card .follow {
     font-size: 12px;
     font-weight: 500;
-    color: #444444
+    color: #cccccc;
 }
 
 #account #profil_card .btn1 {
     height: 40px;
     width: 150px;
     border: none;
-    background-color: #000;
-    color: #aeaeae;
-    font-size: 15px
+    color: black;
+    background-image : linear-gradient(#d7e1ec,#d7e1ec);
+    font-size: x-large;
+    font-weight: bold;
+
+    transition: color .1s ease,background-image .2s ease;
+}
+
+#account #profil_card .btn1:hover{
+    color: var(--colorTertiaryVariant);
+    background-image : var(--gradient-bg-profil);
 }
 
 #account #profil_card .text span {
-    font-size: 13px;
-    color: #545454;
+    font-size: 15px;
+    color: #cccccc;
     font-weight: 500
 }
 
@@ -223,6 +244,16 @@ div#homepage button {
     fill: var(--colorPrimaryVariant);
 }
 
+#account #accoptions svg{
+    fill: black;
+    transition: fill .5s ease;
+}
+
+
+#account #accoptions svg:hover{
+    fill: var(--colorTertiary
+    );
+}
 
 #connected{
     background-color: var(--colorSecondaryLight);
@@ -245,9 +276,10 @@ div#homepage button {
 div.parallaxBG.parallaxBGBis{
     background-image: var(--gradient-bgimg), url("../res/drawable/img/render.png");
     border-bottom-color: var(--colorTertiary);
+    border-top: solid var(--espace-section) var(--colorTertiary);
     margin: 0;
     max-width: 100%;
-    height: 50vh;
+    height: 75vh;
 }
 
 #listElem svg{
