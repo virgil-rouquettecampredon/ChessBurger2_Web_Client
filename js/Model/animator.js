@@ -1,7 +1,7 @@
 /* ==================================================================================
     ANIMATION BEHAVIORS
 ================================================================================== */
-
+import {Board} from "./Board.js";
 
 export const AnimationWay = {
     NORMAL : 0,
@@ -20,7 +20,7 @@ export const AnimationFunction = {
 }
 
 //=========== Time interpolation AnimationFunction
-let nb_x_id = 2;
+let nb_x_id = 4;
 
 function lerp(t){
     return  t;
@@ -77,21 +77,23 @@ function makeEaseInOut(timing) {
 }
 
 
-export default class AnimatorBoard {
+export class AnimatorBoard {
 
     //Going from 0 to duration
     constructor(duration, board) {
         this.duration = duration;
-        this.way = AnimationWay.NORMAL;
+
+        this.way            = AnimationWay.EASEOUT;
+        this.animationFNC   = AnimationFunction.CIRC;
 
         this.drawingElement = undefined;
         this.endBounds      = undefined;
 
-        this.startTime = undefined;
-        this.animationOn = false;
+        this.startTime      = undefined;
+        this.animationOn    = false;
 
-        this.board = board;
-        this.canvasContext = this.board.contextboard;
+        this.board          = board;
+        this.canvasContext  = this.board.contextboard;
 
         this.animation_cpt      = 0;
         this.animation_loop_cpt = 1;
@@ -118,7 +120,9 @@ export default class AnimatorBoard {
     }
 
     getVal(t){
-        let fnc;
+        //console.log("GET VAL");
+        //console.log(this.animationFNC);
+
         switch (this.animationFNC){
             case AnimationFunction.LERP :
                 return this.getWay(lerp)(t);
@@ -137,50 +141,69 @@ export default class AnimatorBoard {
         }
     }
 
-
-
     onStart(){}
     onEnd(){}
-
-    animationCycle(t) {
-        if (this.startTime == undefined) this.startTime = t;
-        let relativeTime = (t - this.startTime) / this.duration;
-
-        if (relativeTime <= 1) {
-
-            //Draw elements
-            this.board.drawBoard();
-
-            let valAnim = ((this.getVal)(relativeTime) - .5);
-            let start_pos   = this.drawingElement.bounds;
-            let end_pos     = this.endBounds;
-
-            this.drawingElement.bounds.right    = start_pos.right + (end_pos.right - start_pos.right)* valAnim;
-            this.drawingElement.bounds.left     = start_pos.left + (end_pos.left - start_pos.left)* valAnim;
-            this.drawingElement.bounds.top      = start_pos.top + (end_pos.top - start_pos.top)* valAnim;
-            this.drawingElement.bounds.bottom   = start_pos.bottom + (end_pos.bottom - start_pos.bottom)* valAnim;
-
-            //Draw the element
-            this.drawingElement.draw(this.canvasContext);
-            //LOOP
-            this.id = requestAnimationFrame(this.animationCycle);
-        } else if (this.animationOn) {
-            cancelAnimationFrame(this.id);
-            this.animationOn = false;
-            this.animation_cpt++;
-
-            if (this.animation_cpt<this.animation_loop_cpt) {
-                this.startTime = t;
-                requestAnimationFrame(this.animationCycle);
-            }else{
-                this.onEnd();
-            }
-        }
-    }
 
     launch(){
         this.onStart();
         this.animationOn = true;
-        this.id = requestAnimationFrame(this.animationCycle);
+        let obj = this;
+
+        let start_pos   = this.drawingElement.bounds;
+
+        let end_pos     = this.endBounds;
+
+        this.id = requestAnimationFrame((t)=> animationCycle(t,obj, {
+            left    : start_pos.left,
+            right   : start_pos.right,
+            top     : start_pos.top,
+            bottom  : start_pos.bottom,
+        }, end_pos));
+    }
+}
+
+let aff = true;
+function animationCycle(t, object, start, end) {
+    //console.log(object);
+    //console.log(object.board);
+
+    //console.log(t);
+
+    if (object.startTime === undefined) object.startTime = t;
+    let relativeTime = (t - object.startTime) / object.duration;
+
+    //console.log(relativeTime);
+
+    if (relativeTime <= 1) {
+
+        //Draw elements
+        object.board.clear();
+        object.board.drawBoard();
+
+        let valAnim = ((object.getVal)(relativeTime));
+
+        object.drawingElement.bounds.right    = start.right     + (end.right -  start.right)    * valAnim;
+        object.drawingElement.bounds.left     = start.left      + (end.left -   start.left)     * valAnim;
+        object.drawingElement.bounds.top      = start.top       + (end.top -    start.top)      * valAnim;
+        object.drawingElement.bounds.bottom   = start.bottom    + (end.bottom - start.bottom)   * valAnim;
+
+        //Draw the element
+        object.drawingElement.draw(object.canvasContext);
+        //console.log(object.drawingElement);
+
+        //LOOP
+        object.id = requestAnimationFrame((t)=> animationCycle(t,object, start, end));
+
+    } else if (object.animationOn) {
+        cancelAnimationFrame(object.id);
+        object.animationOn = false;
+        object.animation_cpt++;
+
+        if (object.animation_cpt<object.animation_loop_cpt) {
+            object.startTime = t;
+            requestAnimationFrame((t)=> animationCycle(t,object, start, end));
+        }else{
+            object.onEnd();
+        }
     }
 }

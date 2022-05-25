@@ -37,7 +37,7 @@
 </head>
 
 <header>
-    <nav class="navbar navbar-expand-sm navbar-light" id="neubar">
+    <nav class="navbar navbar-expand-sm navbar-light" id="nav_bar">
         <div class="container">
             <a id="homePageNAV_logo" class="navbar-brand" href="#">
                 <img src="./res/drawable/img/logo_chessburger_2.png" height="60"/>
@@ -46,6 +46,8 @@
                     aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <p id="currentPartyName">TEST</p>
 
             <div class=" collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto ">
@@ -94,7 +96,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
         crossorigin="anonymous"></script>
-
 
 
 <div id="main_container_chess" class="pt-5 d-flex justify-content-center align-content-center">
@@ -174,6 +175,8 @@
                     </svg>
                 </div>
             </div>
+
+            <a id="arrowElem" class="arrows" href="#bottom"></a>
         </div>
     </div>
 
@@ -294,7 +297,7 @@
     </div>
 </div>
 
-<div id="BG_connected" class="parallaxBG parallaxBGBis">
+<div id="BG_connected" class="parallaxBG">
 </div>
 
 
@@ -351,14 +354,12 @@
             </div>
         </div>
         </div>
-
         <div id="accoptions" class="col-11 col-md-7 p-3">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-sm-3">
-                            <p class="mb-0" data-bs-toggle="modal" data-bs-target="#preferencesModal"
-                               style="cursor: pointer">
+                            <p class="mb-0" data-bs-toggle="modal" id="preferencesAction" data-bs-target="#preferencesModal" style="cursor: pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
                                      class="bi bi-gear" viewBox="0 0 16 16">
                                     <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
@@ -390,14 +391,13 @@
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-sm-3" data-bs-toggle="modal" data-bs-target="#classementModal"
-                             style="cursor: pointer">
-                            <h4 class="mb-0">
+                        <div class="col-sm-3" style="cursor: pointer">
+                            <p class="mb-0" data-bs-toggle="modal" data-bs-target="#classementModal" id="classementAction">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
                                      class="bi bi-trophy" viewBox="0 0 16 16">
                                     <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935zM3.504 1c.007.517.026 1.006.056 1.469.13 2.028.457 3.546.87 4.667C5.294 9.48 6.484 10 7 10a.5.5 0 0 1 .5.5v2.61a1 1 0 0 1-.757.97l-1.426.356a.5.5 0 0 0-.179.085L4.5 15h7l-.638-.479a.501.501 0 0 0-.18-.085l-1.425-.356a1 1 0 0 1-.757-.97V10.5A.5.5 0 0 1 9 10c.516 0 1.706-.52 2.57-2.864.413-1.12.74-2.64.87-4.667.03-.463.049-.952.056-1.469H3.504z"/>
                                 </svg>
-                            </h4>
+                            </p>
                         </div>
                         <div class="col-sm-9">
                             <h4 class="text-muted mb-0">
@@ -429,10 +429,7 @@
     </div>
 </div>
 
-
 <div id="bottom" style="width: 100%;"></div>
-
-
 
 <div class="modal fade" id="CreatePartyModal" tabindex="-1" aria-labelledby="CreatePartyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -447,9 +444,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" id="createGameButton" data-bs-dismiss="modal">Céer une
-                    partie
-                </button>
+                <button type="button" class="btn btn-primary" id="createGameButton" data-bs-dismiss="modal">Céer une partie</button>
             </div>
         </div>
     </div>
@@ -462,11 +457,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
+                <label for="animation">Activer les animations</label>
+                <input class="switch"  id="animation" type="checkbox">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" id="preferences">Sauvegarder les changements
+                <button type="button" class="btn btn-primary" id="preferences" data-bs-dismiss="modal">Sauvegarder les changements
                 </button>
             </div>
         </div>
@@ -593,6 +589,19 @@
     </div>
 
 
+<div id="AlertMessageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header d-flex justify-content-around align-items-center">
+        <img src="./res/drawable/img/img.png" class="rounded mr-2" alt="logoPasBo">
+        <strong class="title">ChessBurger2</strong>
+            <button type="button" class="ml-2 mb-1 btn-close" data-bs-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+    </div>
+    <div id="toastValue" class="toast-body">
+        JE SUIS UN TOAST TOUT BO
+    </div>
+</div>
+
 <script type="text/javascript">
     //==============================================================================================================
     //Variables DOM
@@ -604,7 +613,7 @@
     const dom_nav_homePage_logo       = document.getElementById("homePageNAV_logo");
     const dom_nav_homePage_home       = document.getElementById("homePageNAV_home");
     const dom_nav_options             = document.getElementById("navbarDropdownMenuLink");
-
+    const dom_nav_partyName           = document.getElementById("currentPartyName");
 
     //Main Dom element
     const dom_main_game                    = document.getElementById("main_container_chess");
@@ -624,6 +633,7 @@
     const dom_buttonCreateAccount       = document.getElementById("buttonCreateAccount");
     const dom_buttonDeleteAccount       = document.getElementById("buttonDeleteAccount");
     const dom_history                   = document.getElementById("historyAction");
+    const dom_classement                = document.getElementById("classementAction");
     const dom_disconnectButton          = document.getElementById("disconnectButton");
     const dom_dissmissButton            = document.getElementById("dissmissButton");
     const dom_createGameButton          = document.getElementById("createGameButton");
@@ -648,11 +658,25 @@
     const dom_profil_elo                = document.getElementById("profil_elo");
     const dom_profil_description        = document.getElementById("profil_description");
     const dom_game_refresh              = document.getElementById("refreshelem");
+    const dom_arrow_animation           = document.getElementById("arrowElem");
+    const preferencesAction             = document.getElementById("preferencesAction");
 
+    const dom_alert_toast               = document.getElementById("AlertMessageToast");
+    const dom_alert_message_toast       = document.getElementById("toastValue");
+    const dom_switch_animation          = document.getElementById("animation");
+
+
+    function showToast(time){
+        let myToast = new bootstrap.Toast(dom_alert_toast, {
+            delay: time ?? 5000
+        });
+        myToast.show();
+    }
 
     //UIs où la partie de jeu sera mise
     let game            = document.getElementById("game");
     let game_ui         = document.getElementById("gameUI");
+
     //==============================================================================================================
     //Variables application
     //Si la personne courrante est connectée
@@ -664,8 +688,10 @@
 
     let player = 0;
     let gameNameOnlineActivity = 0;
+    let ANIMATION_PIECE        = true;
     //==============================================================================================================
 </script>
+
 </body>
 
 </html>

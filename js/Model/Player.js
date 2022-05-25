@@ -140,30 +140,33 @@ export class Player {
 
 
         let wrapper_datas = document.createElement("div");
-        wrapper_datas.setAttribute("class","col-lg-8 col-md-8 col-12");
+        wrapper_datas.setAttribute("class","playerData col-lg-8 col-md-8 col-12");
+
+        //Loading elem
+        this.UI.onWaitingPlayer = document.createElement("div");
+        this.UI.onWaitingPlayer.setAttribute("class","waiting");
+        for (let i = 1; i <= 3; i++) {
+            let div = document.createElement("div");
+            div.setAttribute("class", "ball ball_" + i);
+            this.UI.onWaitingPlayer.appendChild(div);
+        }
+        wrapper_datas.appendChild(this.UI.onWaitingPlayer);
 
         this.UI.nameSpace   = document.createElement("h2");
         this.UI.nameSpace.setAttribute("class","m-t-0 m-b-0");
         this.UI.nameSpace.innerHTML = "<strong>" + this.pseudo + "</strong>";
         wrapper_datas.appendChild(this.UI.nameSpace);
 
-        this.UI.cimetary_1  = document.createElement("div");
-        this.UI.cimetary_1.setAttribute("class","row");
-        this.UI.cimetary_2  = document.createElement("div");
-        this.UI.cimetary_2.setAttribute("class","row");
+        this.UI.cimetary  = document.createElement("div");
+        this.UI.cimetary.setAttribute("class","row");
 
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 16; i++) {
             let div = document.createElement("div");
-            div.setAttribute("class", "col");
-
-            let div_2 = document.createElement("div");
-            div_2.setAttribute("class", "col");
-            this.UI.cimetary_1.appendChild(div);
-            this.UI.cimetary_2.appendChild(div_2);
+            div.setAttribute("class", "col-2");
+            this.UI.cimetary.appendChild(div);
         }
 
-        wrapper_datas.appendChild(this.UI.cimetary_1);
-        wrapper_datas.appendChild(this.UI.cimetary_2);
+        wrapper_datas.appendChild(this.UI.cimetary);
         wrapper_elm.appendChild(wrapper_datas);
         card_body.appendChild(wrapper_elm);
         card_wrapper.appendChild(card_body);
@@ -171,8 +174,10 @@ export class Player {
         root_ui.appendChild(this.UI.playerCard);
     }
     UI_setName(name){
+        //console.log("====================== setNAME : " + name);
+        //console.log(this.UI.nameSpace);
         this.pseudo = name;
-        this.UI.nameSpace = this.pseudo;
+        this.UI.nameSpace.innerHTML = "<strong>" + this.pseudo + "</strong>";
     }
     UI_setPorfilPicFromLocalFile(src){
         this.UI.profilPic.src = src;

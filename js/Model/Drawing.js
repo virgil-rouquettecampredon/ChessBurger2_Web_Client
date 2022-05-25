@@ -3,7 +3,7 @@
       => all drawing features to help manipulating graphics for rendering
 ================================================================================== */
 
-const imagePathFolderName = "../res/drawable/";
+const imagePathFolderName = "./res/drawable/";
 
 let global_cpt_elements         = [];
 let global_cpt_elements_limits  = [];

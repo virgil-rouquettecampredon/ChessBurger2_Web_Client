@@ -22,7 +22,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-console.log("OUI");
+console.log("FIREBASE INITIALISATION :  DONE");
 const auth = getAuth(app);
 
 const storage = getStorage();

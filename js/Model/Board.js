@@ -33,10 +33,10 @@ export let plate_color_piece               = ["#FFFFFF","#FFFFFF"];
 
 
 export const TransformPieces = {
-    TOWER : 1,
-    QUEEN : 2,
-    BISHOP : 3,
-    KNIGHT : 4,
+    TOWER   : 1,
+    QUEEN   : 2,
+    BISHOP  : 3,
+    KNIGHT  : 4,
 }
 
 function createGameCSS() {
@@ -185,9 +185,9 @@ export class Board {
         this.cases = new Array(this.nb_col * this.nb_row);
         this.initBoard();
 
-        console.log("BOARD CREATION !");
-        console.log(this);
-        console.log(this.cases);
+        //console.log("BOARD CREATION !");
+        //console.log(this);
+        //console.log(this.cases);
 
         this.changedCases = [];
     }
@@ -328,43 +328,45 @@ export class Board {
         this.UI.transformScreen.setAttribute("id", "transform_screen");
         this.UI.transformScreen.setAttribute("class", "cover-container d-flex h-100 p-3 mx-auto flex-column text-center");
 
+        //let header = document.createElement("header");
+        //header.setAttribute("class","mb-auto");
+        //header.setAttribute("class","masthead");
 
-        let header = document.createElement("header");
-        header.setAttribute("class","masthead mb-auto");
-        let h_div = document.createElement("div");
-        h_div.setAttribute("class","inner");
+        //let h_div = document.createElement("h3");
+        //h_div.setAttribute("class","inner");
+        this.UI.transformScreen_player = document.createElement("h4");
+        this.UI.transformScreen_player.setAttribute("class","player");
+        //h_div.appendChild(this.UI.transformScreen_player);
+        //header.appendChild(h_div);
 
-        this.UI.transformScreen_player = document.createElement("h3");
-        this.UI.transformScreen_player.setAttribute("class","masthead-brand player");
-        h_div.appendChild(this.UI.transformScreen_player);
-        header.appendChild(h_div);
-        this.UI.transformScreen.appendChild(header);
+        this.UI.transformScreen.appendChild(this.UI.transformScreen_player);
 
         let main = document.createElement("main");
-        main.setAttribute("class", "inner cover");
-        main.setAttribute("role", "main");
+        //main.setAttribute("class", "inner cover");
+        //main.setAttribute("role", "main");
 
         this.UI.transformScreen_message = document.createElement("h3");
-        this.UI.transformScreen_message.setAttribute("class", "message cover-heading");
+        //this.UI.transformScreen_message.setAttribute("class", "message cover-heading");
+        this.UI.transformScreen_message.setAttribute("class", "message");
         this.UI.transformScreen_message.innerText = "Veuillez choisir une pièce à transformer";
 
         this.UI.transformScreen_imgWrapper = document.createElement("div");
-        this.UI.transformScreen_imgWrapper.setAttribute("class", "images lead row");
+        this.UI.transformScreen_imgWrapper.setAttribute("class", "row mt-3 justify-content-around");
 
-        this.UI.transformScreen_piece_tower = document.createElement("img");
-        this.UI.transformScreen_piece_bishop = document.createElement("img");
-        this.UI.transformScreen_piece_queen = document.createElement("img");
-        this.UI.transformScreen_piece_knight = document.createElement("img");
+        this.UI.transformScreen_piece_tower     = document.createElement("img");
+        this.UI.transformScreen_piece_bishop    = document.createElement("img");
+        this.UI.transformScreen_piece_queen     = document.createElement("img");
+        this.UI.transformScreen_piece_knight    = document.createElement("img");
 
-        this.UI.transformScreen_piece_tower.setAttribute("class", "col ratio ratio-1x1");
-        this.UI.transformScreen_piece_bishop.setAttribute("class", "col ratio ratio-1x1");
-        this.UI.transformScreen_piece_queen.setAttribute("class", "col ratio ratio-1x1");
-        this.UI.transformScreen_piece_knight.setAttribute("class", "col ratio ratio-1x1");
+        this.UI.transformScreen_piece_tower.setAttribute("class", "p-2 imgtransform col-5 mt-2"/*col-2 ratio ratio-1x2"*/);
+        this.UI.transformScreen_piece_bishop.setAttribute("class", "p-2 imgtransform col-5 mt-2"/*col-2 ratio ratio-1x2"*/);
+        this.UI.transformScreen_piece_queen.setAttribute("class", "p-2 imgtransform col-5 mt-4"/*col-2 ratio ratio-1x2"*/);
+        this.UI.transformScreen_piece_knight.setAttribute("class", "p-2 imgtransform col-5 mt-4"/*col-2 ratio ratio-1x2"*/);
 
-        this.UI.transformScreen_piece_tower.alt = "img";
-        this.UI.transformScreen_piece_bishop.alt = "img";
-        this.UI.transformScreen_piece_queen.alt = "img";
-        this.UI.transformScreen_piece_knight.alt = "img";
+        this.UI.transformScreen_piece_tower.alt     = "img tower";
+        this.UI.transformScreen_piece_bishop.alt    = "img bishop";
+        this.UI.transformScreen_piece_queen.alt     = "img queen";
+        this.UI.transformScreen_piece_knight.alt    = "img knight";
 
         this.UI.transformScreen_imgWrapper.appendChild(this.UI.transformScreen_piece_tower);
         this.UI.transformScreen_imgWrapper.appendChild(this.UI.transformScreen_piece_bishop);
@@ -376,7 +378,7 @@ export class Board {
         this.UI.transformScreen.appendChild(main);
 
         let footer = document.createElement("footer");
-        footer.setAttribute("class","mastfoot mt-auto");
+        footer.setAttribute("class","mt-auto");
         let d_footer = document.createElement("div");
         d_footer.setAttribute("class","inner");
         d_footer.innerText = "(click to chose)";
@@ -530,6 +532,7 @@ export class Board {
 
         //Put all the pieces in the board
         this.setAPieces(0, 1, p2_pawn1);
+        //this.setAPieces(0, 6, p2_pawn1);
         this.setAPieces(1, 1, p2_pawn2);
         this.setAPieces(2, 1, p2_pawn3);
         this.setAPieces(3, 1, p2_pawn4);
@@ -616,7 +619,7 @@ export class Board {
 
         let obj = this;
         function onclick_listerner_knight(event) {
-            console.log("ONCLICK KNIGHT !");
+            //console.log("ONCLICK KNIGHT !");
             if (event) {
                 //obj.UI.transformScreen_piece_knight.removeEventListener('click', onclick_listerner_knight);
                 obj.UI.transformScreen_piece_knight.onclick = function (){};
@@ -632,7 +635,7 @@ export class Board {
             }
         }
         function onclick_listerner_tower(event) {
-            console.log("ONCLICK TOWER !");
+            //console.log("ONCLICK TOWER !");
             if (event) {
                 //obj.UI.transformScreen_piece_tower.removeEventListener('click', onclick_listerner_tower);
                 obj.UI.transformScreen_piece_tower.onclick = function (){};
@@ -648,7 +651,7 @@ export class Board {
             }
         }
         function onclick_listerner_bishop(event) {
-            console.log("ONCLICK BISHOP !");
+            //console.log("ONCLICK BISHOP !");
             if (event) {
                 //obj.UI.transformScreen_piece_bishop.removeEventListener('click', onclick_listerner_bishop);
                 obj.UI.transformScreen_piece_bishop.onclick = function (){};
@@ -665,7 +668,7 @@ export class Board {
             }
         }
         function onclick_listerner_queen(event) {
-            console.log("ONCLICK QUEEN !");
+            //console.log("ONCLICK QUEEN !");
             if (event) {
                 //obj.UI.transformScreen_piece_queen.removeEventListener('click', onclick_listerner_queen);
                 obj.UI.transformScreen_piece_queen.onclick = function (){};
@@ -713,6 +716,7 @@ export class Board {
                 if ((i != 0 || j != 0) && (i != nbY || j != nbX)) {
                     let posToWatch = new Position(p1.x + j * coefX, p1.y + i * coefY);
                     let curCaseToWatch = this.cases[posToWatch.y * this.nb_col + posToWatch.x];
+
 
                     if (curCaseToWatch.piece != undefined) {
                         return false;
@@ -806,8 +810,8 @@ export class Board {
     //Set a list of pieces (on startElem) with a continuous displacement on the board (to endElem)
     animatedDisplacement(startElem, endElem, nbELem, animator) {
         for (let i = 0; i < nbELem; i++) {
-            let start = startElem.get(i);
-            let end = endElem.get(i);
+            let start = startElem[i];
+            let end = endElem[i];
 
             //In this func, we will only perform animation visual effect on the board, the gameplay mecanism is performed by onTheEnd
             let p_dep = start.piece;
@@ -818,7 +822,9 @@ export class Board {
             if (p_dep != undefined) {
                 //Now we can perform the continuous movement of the piece
                 animator.drawingElement = p_dep.appearance;
-                animator.endBounds = end.bounds;
+                animator.endBounds      = end.bounds;
+
+                console.log(animator);
                 animator.launch();
             }
         }

@@ -5,11 +5,10 @@ import {Position} from "./Movement.js";
 import {getLinearCursorPosition} from "./util.js";
 import {TransformPieces} from "./Board.js";
 import {Bishop,Knight,Tower,Queen} from "./Piece.js";
+import {AnimatorBoard} from "./animator.js";
 
 
-//TODO CHECK THAT
-export let ANIMATION_PIECE                 = false;
-export let animation_duration              = .5;
+export let animation_duration              = 300;
 
 export let affichage                       = false;
 
@@ -61,7 +60,7 @@ export class GameManager {
     /**
      * ======== For launch and play a game ========
      **/
-    start() {
+    start(p1,p2) {
         console.log("START THE GAME");
 
         //Clear and draw the empty board
@@ -69,7 +68,9 @@ export class GameManager {
         this.board.drawBoard();
 
         //Init the board
-        this.players = this.board.initGameInstances();
+        this.players = this.board.initGameInstances(p1,p2);
+        this.players[0].UI.onWaitingPlayer.style.display = "none";
+        this.players[1].UI.onWaitingPlayer.style.display = "none";
 
         if (this.startANewTurn()) {
             this.onEndingGame();
@@ -112,7 +113,7 @@ export class GameManager {
         //console.log(this.board.UI.canvas);
 
         this.board.UI.canvas.addEventListener('click', function(event) {
-            console.log("CLICK ON THE BOARD !");
+            //console.log("CLICK ON THE BOARD !");
             //console.log(event);
 
             if (!obj.gameStopped) {
@@ -120,54 +121,68 @@ export class GameManager {
                 //Get coord when onclick
                 let coord = getLinearCursorPosition(obj.board.UI.canvas, event);
 
-                console.log(coord);
-
                 let c = obj.fromCanvasCoordLinearToCaseInstance(coord.xcoord, coord.ycoord);
-                let p = c.piece;
-                let as = c.rock_elem;
 
-                //console.log(c);
-                //console.log(p);
-                //console.log(as);
-                //console.log("========== START COMPUTING !");
+                if (c !== undefined) {
+                    let p = c.piece;
+                    let as = c.rock_elem;
 
-                //If the case was selected the round just before by the player
-                if (c.pre_selected_pos) {
-                    //Perform the mouvement
-                    //Clear the preselected positions
-                    obj.board.setPossiblePreSelectedPos(obj.lastPosPreSelected.x, obj.lastPosPreSelected.y, false);
+                    //If the case was selected the round just before by the player
+                    if (c.pre_selected_pos) {
+                        //Perform the mouvement
+                        //Clear the preselected positions
+                        obj.board.setPossiblePreSelectedPos(obj.lastPosPreSelected.x, obj.lastPosPreSelected.y, false);
 
-                    //=========================
-                    //  CLEAR ALL THE POSITIONS
-                    //========================
-                    //Clear all the possibles moves
-                    for (let pos of obj.lastPossiblePositions) {
-                        obj.board.setPossiblePos(pos.x, pos.y, false);
-                        obj.board.setPossiblePosRock(pos.x, pos.y, undefined);
-                    }
-                    obj.lastPossiblePositions = [];
+                        //=========================
+                        //  CLEAR ALL THE POSITIONS
+                        //========================
+                        //Clear all the possibles moves
+                        for (let pos of obj.lastPossiblePositions) {
+                            obj.board.setPossiblePos(pos.x, pos.y, false);
+                            obj.board.setPossiblePosRock(pos.x, pos.y, undefined);
+                        }
+                        obj.lastPossiblePositions = [];
 
-                    //If we select a position with no rock behavior
-                    if (as === undefined) {
-                        //We need to perform a variant of the shot with move animation
-                        if (ANIMATION_PIECE) {
-                            //Animation
-                            obj.moveAPiece_animated(obj.lastPosOfPieceSelected, obj.lastPosPreSelected, false);
-                            obj.lastPosPreSelected = undefined;
-                        } else {
-                            //No animation
-                            let pMoved = obj.moveAPiece(obj.lastPosOfPieceSelected, obj.lastPosPreSelected, false);
-
-                            console.log("PIECE MOVED");
-                            console.log(pMoved);
-
-                            //We need to check if the movement need an upgrade treatment
-                            if (c.is_end_case && pMoved.canBeTransformed() && pMoved.possessor === obj.currentPlayer) {
-                                //Launch the upgrade treatment
-                                obj.transformAPiece(pMoved, obj.lastPosPreSelected);
+                        //If we select a position with no rock behavior
+                        if (as === undefined) {
+                            //We need to perform a variant of the shot with move animation
+                            if (ANIMATION_PIECE) {
+                                //Animation
+                                obj.moveAPiece_animated(obj.lastPosOfPieceSelected, obj.lastPosPreSelected, false);
                                 obj.lastPosPreSelected = undefined;
                             } else {
+                                //No animation
+                                let pMoved = obj.moveAPiece(obj.lastPosOfPieceSelected, obj.lastPosPreSelected, false);
+
+                                //console.log("PIECE MOVED");
+                                //console.log(pMoved);
+
+                                //We need to check if the movement need an upgrade treatment
+                                if (c.is_end_case && pMoved.canBeTransformed() && pMoved.possessor === obj.currentPlayer) {
+                                    //Launch the upgrade treatment
+                                    obj.transformAPiece(pMoved, obj.lastPosPreSelected);
+                                    obj.lastPosPreSelected = undefined;
+                                } else {
+                                    obj.lastPosPreSelected = undefined;
+                                    obj.onFinishTurn();
+                                    //Start a new turn
+                                    if (obj.startANewTurn()) {
+                                        //If its finished, then stop the treatment
+                                        obj.onEndingGame();
+                                    }
+                                }
+                            }
+                        } else {
+                            //We need to perform a variant of the shot with move animation
+                            if (ANIMATION_PIECE) {
+                                //Animation
+                                obj.moveAPiece_animated_rock(obj.lastPosOfPieceSelected, as);
                                 obj.lastPosPreSelected = undefined;
+                            } else {
+                                //No animation
+                                obj.moveAPiece_rock(obj.lastPosOfPieceSelected, as);
+                                obj.lastPosPreSelected = undefined;
+                                obj.onFinishTurn();
                                 //Start a new turn
                                 if (obj.startANewTurn()) {
                                     //If its finished, then stop the treatment
@@ -176,77 +191,58 @@ export class GameManager {
                             }
                         }
                     } else {
-                        //We need to perform a variant of the shot with move animation
-                        if (ANIMATION_PIECE) {
-                            //Animation
-                            obj.moveAPiece_animated_rock(obj.lastPosOfPieceSelected, as);
-                            obj.lastPosPreSelected = undefined;
+                        //Clear the last preselected position
+                        if (obj.lastPosPreSelected !== undefined) {
+                            obj.board.setPossiblePreSelectedPos(obj.lastPosPreSelected.x, obj.lastPosPreSelected.y, false);
+                        }
+
+                        //Then it could be a possible movement case
+                        if (c.possible_pos) {
+                            //Then this case is transformed on a pre-selected case
+                            obj.lastPosPreSelected = new Position(c.col, c.row);
+                            obj.board.setPossiblePreSelectedPos(obj.lastPosPreSelected.x, obj.lastPosPreSelected.y, true);
                         } else {
-                            //No animation
-                            obj.moveAPiece_rock(obj.lastPosOfPieceSelected, as);
-                            obj.lastPosPreSelected = undefined;
-                            //Start a new turn
-                            if (obj.startANewTurn()) {
-                                //If its finished, then stop the treatment
-                                obj.onEndingGame();
+                            //Then this case may just contain a piece on it
+
+                            //=========================
+                            //  CLEAR ALL THE POSITIONS
+                            //=========================
+                            //Delete precedent position seen
+                            for (let pos of obj.lastPossiblePositions) {
+                                obj.board.setPossiblePos(pos.x, pos.y, false);
+                                obj.board.setPossiblePosRock(pos.x, pos.y, undefined);
                             }
-                        }
-                    }
-                } else {
-                    //Clear the last preselected position
-                    if (obj.lastPosPreSelected !== undefined) {
-                        obj.board.setPossiblePreSelectedPos(obj.lastPosPreSelected.x, obj.lastPosPreSelected.y, false);
-                    }
-
-                    //Then it could be a possible movement case
-                    if (c.possible_pos) {
-                        //Then this case is transformed on a pre-selected case
-                        obj.lastPosPreSelected = new Position(c.col, c.row);
-                        obj.board.setPossiblePreSelectedPos(obj.lastPosPreSelected.x, obj.lastPosPreSelected.y, true);
-                    } else {
-                        //Then this case may just contain a piece on it
-
-                        //=========================
-                        //  CLEAR ALL THE POSITIONS
-                        //=========================
-                        //Delete precedent position seen
-                        for (let pos of obj.lastPossiblePositions) {
-                            obj.board.setPossiblePos(pos.x, pos.y, false);
-                            obj.board.setPossiblePosRock(pos.x, pos.y, undefined);
-                        }
-                        obj.lastPossiblePositions = [];
+                            obj.lastPossiblePositions = [];
 
 
-                        if (p !== undefined) {
-                            //Click on a piece on the board
-                            //Send new positions player wanted to see
-                            let posPos = obj.currentPlayer.getPositionsPiece(p);
-                            for (let pos of posPos) {
-                                obj.lastPossiblePositions.push(pos);
-                                obj.board.setPossiblePos(pos.x, pos.y, true);
-                            }
-
-                            //Set potentially rock positions
-                            //console.log(obj.rockPiecePositons);
-
-                            let pos_rock = obj.rockPiecePositons.get(p);
-                            if (pos_rock !== undefined) {
-                                for (let aRock of pos_rock) {
-                                    let pRock = aRock.p1;
-                                    obj.lastPossiblePositions.push(pRock);
-                                    obj.board.setPossiblePosRock(pRock.x, pRock.y, aRock);
-                                    obj.board.setPossiblePos(pRock.x, pRock.y, true);
+                            if (p !== undefined) {
+                                //Click on a piece on the board
+                                //Send new positions player wanted to see
+                                let posPos = obj.currentPlayer.getPositionsPiece(p);
+                                for (let pos of posPos) {
+                                    obj.lastPossiblePositions.push(pos);
+                                    obj.board.setPossiblePos(pos.x, pos.y, true);
                                 }
-                            }
 
-                            //For save an historic of precedents choices
-                            obj.lastPosOfPieceSelected = new Position(c.col, c.row);
+                                //Set potentially rock positions
+                                let pos_rock = obj.rockPiecePositons.get(p);
+                                if (pos_rock !== undefined) {
+                                    for (let aRock of pos_rock) {
+                                        let pRock = aRock.p1;
+                                        obj.lastPossiblePositions.push(pRock);
+                                        obj.board.setPossiblePosRock(pRock.x, pRock.y, aRock);
+                                        obj.board.setPossiblePos(pRock.x, pRock.y, true);
+                                    }
+                                }
+
+                                //For save an historic of precedents choices
+                                obj.lastPosOfPieceSelected = new Position(c.col, c.row);
+                            }
                         }
                     }
+                    //Draw the changes
+                    obj.board.commitChanges();
                 }
-
-                //Draw the changes
-                obj.board.commitChanges();
             }
         }, false);
     }
@@ -285,7 +281,7 @@ export class GameManager {
 
         this.board.commitChanges();
 
-        this.nbTurn++;
+        //this.nbTurn++;
         //console.log("======================================");
         return this.isFinished();
     }
@@ -549,14 +545,17 @@ export class GameManager {
         let s = new Shot(moved, start, end, possibly_eaten, !lightMove, !moved.movedYet);
         this.allShots.push([s]);
 
-        let animator = new AnimatorBoard(animation_duration, this);
+        let animator = new AnimatorBoard(animation_duration, this.board);
 
         let obj = this;
-        animator.onStart = new function () {
+        animator.onStart = function () {
             obj.board.setAPieces(start_case.col, start_case.row, undefined);
         }
 
-        animator.onEnd = new function () {
+        animator.onEnd = function () {
+            obj.board.clear();
+            obj.board.drawBoard();
+
             //Visual animation ending
             obj.board.restart_no_animation_context();
 
@@ -584,6 +583,7 @@ export class GameManager {
                 //Launch the upgrade treatment
                 obj.transformAPiece(moved, end);
             } else {
+                obj.onFinishTurn();
                 //Else go through a normal treatment
                 //Go through another round and start a new turn
                 if (obj.startANewTurn()) {
@@ -700,7 +700,7 @@ export class GameManager {
         let obj = this;
 
         this.board.onChangePieceShape(this.currentPlayer, (val, pieceClick) => {
-            console.log("    ONCLICK ON GAME !");
+            //console.log("    ONCLICK ON GAME !");
             let id = val;
 
             let newP = undefined;
@@ -746,6 +746,7 @@ export class GameManager {
 
             obj.board.commitChanges();
 
+            obj.onFinishTurn();
             //Now we can go to another turn
             //Start a new turn
             if (obj.startANewTurn()) {
@@ -753,7 +754,7 @@ export class GameManager {
                 obj.onEndingGame();
             }
 
-            console.log("    END ONCLICK ON GAME !");
+            //console.log("    END ONCLICK ON GAME !");
         });
     }
 
@@ -852,6 +853,9 @@ export class GameManager {
         }
 
         animator.onEnd = new function () {
+            obj.board.clear();
+            obj.board.drawBoard();
+
             //Visual animation ending
             obj.board.restart_no_animation_context();
 
@@ -864,6 +868,7 @@ export class GameManager {
             //Cancel pause moment
             obj.gameStopped = false;
 
+            obj.onFinishTurn();
             //Go through another round
             //Start a new turn
             if (obj.startANewTurn()) {
@@ -878,30 +883,50 @@ export class GameManager {
         this.board.animatedDisplacement([p1_case_start, p2_case_start], [p1_case_end, p2_case_end], 2, animator);
     }
 
+    onFinishTurn(){
+        this.nbTurn++;
+    }
+
 
     /**
      * ======== For layout MAJ (UI) ========
      **/
-    //Add piece to cimatary player p layout
+    //Add piece to cimatary player layout
     addCimetaryLayout(player, piece) {
         let ind = this.getIndex(player);
         if (ind >= 0) {
             let cimetary_size = this.players[ind].cimetary.length -1;
-            let container_to_change = (cimetary_size>8)? this.players[ind].UI.cimetary_2 : this.players[ind].UI.cimetary_1;
 
-            //console.log("PUSH : ELEM TO WATCH");
-            //console.log(this.players[ind].cimetary);
-            //console.log(cimetary_size);
+            /*let container_to_change = (
+                (cimetary_size>8)?
+                    (cimetary_size>16)?
+                        (cimetary_size>24)?
+                            this.players[ind].UI.cimetary_4 : this.players[ind].UI.cimetary_3
+                        : this.players[ind].UI.cimetary_2
+                    : this.players[ind].UI.cimetary_1
+            );*/
+
+            let container_to_change = this.players[ind].UI.cimetary;
+            let elTOadd = (piece.lastShape)? piece.lastShape.appearance.image : piece.appearance.image;
+
             //console.log(container_to_change);
-            //console.log(container_to_change.children[cimetary_size%8]);
-            //console.log(container_to_change.children[cimetary_size%8].firstChild);
+            //console.log(elTOadd);
+            //console.log("CIMETARY SIZE : " + cimetary_size);
 
+
+            if(container_to_change.children[cimetary_size].firstChild === null){
+                container_to_change.children[cimetary_size].appendChild(elTOadd);
+            }else{
+                container_to_change.children[cimetary_size].firstChild.src = elTOadd.src;
+            }
+
+            /*
             let elTOadd = (piece.lastShape)? piece.lastShape.appearance.image : piece.appearance.image;
             if(container_to_change.children[cimetary_size%8].firstChild === null){
                 container_to_change.children[cimetary_size%8].appendChild(elTOadd);
             }else{
                 container_to_change.children[cimetary_size % 8].firstChild.src = elTOadd.src;
-            }
+            }*/
         }
     }
 
@@ -912,16 +937,27 @@ export class GameManager {
 
         let ind = this.getIndex(player);
         if (ind >= 0) {
-            let cimetary_size = this.players[ind].cimetary.length -1;
-            if(cimetary_size>0) {
-                let container_to_change = (cimetary_size > 8) ? this.players[ind].UI.cimetary_2 : this.players[ind].UI.cimetary_1;
+            let cimetary_size = this.players[ind].cimetary.length - 1;
+            if (cimetary_size > 0) {
 
-                console.log(this.players[ind].cimetary);
-                console.log(cimetary_size);
-                console.log(container_to_change);
-                console.log(container_to_change.children[cimetary_size % 8]);
+                /*let container_to_change = (
+                    (cimetary_size>8)?
+                        (cimetary_size>16)?
+                            (cimetary_size>24)?
+                                this.players[ind].UI.cimetary_4 : this.players[ind].UI.cimetary_3
+                            : this.players[ind].UI.cimetary_2
+                        : this.players[ind].UI.cimetary_1
+                );*/
 
-                container_to_change.children[cimetary_size % 8].firstChild.src = "";
+                let container_to_change = this.players[ind].cimetary;
+
+                //let container_to_change = (cimetary_size > 8) ? this.players[ind].UI.cimetary_2 : this.players[ind].UI.cimetary_1;
+                //console.log(this.players[ind].cimetary);
+                //console.log(cimetary_size);
+                //console.log(container_to_change);
+                //console.log(container_to_change.children[cimetary_size % 8]);
+
+                container_to_change.children[cimetary_size].firstChild.src = "";
             }
         }
     }

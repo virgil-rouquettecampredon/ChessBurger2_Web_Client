@@ -34,9 +34,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-console.log("OUI");
+console.log("INIT FIREBASE APP  :       DONE");
 const auth = getAuth(app);
 const db = getDatabase();
+console.log("GET DB             :       DONE");
 
 const loggin = async (email, pwd) => {
     const auth = getAuth();
@@ -99,10 +100,9 @@ function appliedChangementUserInformation(){
     dom_profil_description.innerText = biographie;
 }
 
-
 function startCreerUnCompte(){
     const auth = getAuth();
-    console.log("CREATE ACCOUNT START !");
+    console.log("===== CREATE ACCOUNT START ! =====");
 
 
     let mail               = document.getElementById("account_mail").value;
@@ -114,6 +114,7 @@ function startCreerUnCompte(){
     console.log(mdp);
     console.log(pseudo);
     console.log(" ======================= ");
+
     createUserWithEmailAndPassword(auth, mail, mdp)
         .then((userCredential) => {
             // Signed in
@@ -125,6 +126,12 @@ function startCreerUnCompte(){
         })
         .catch((error) => {
             console.log("ERROR");
+            if(mdp.length<6){
+                dom_alert_message_toast.innerText = "Impossible de créer un compte avec un mot de passe de moins de 6 caractères.";
+            }else{
+                dom_alert_message_toast.innerText = "Impossible de créer un compte avec cette adresse mail :  " + mail;
+            }
+            showToast(4000);
             const errorCode = error.code;
             const errorMessage = error.message;
             // ..
@@ -173,33 +180,155 @@ function upload(){
     uploadFile(user, file);
 }
 
-/** ==================================================FUNCTION FOR PAGE HTML==================================================== **/
 
+/** ==================================================FUNCTION FOR GM ==================================================== **/
+export function turnListener(uid, playerIndex, obj) {
+    console.log("TURN LISTENER");
+    console.log(uid);
+    console.log(playerIndex);
+    console.log(obj);
+    console.log("================");
+
+
+    const refTurn = ref(db, "rooms/" + uid + '/turn');
+    onValue(refTurn, (snapshot) => {
+        //turn listener simplification
+
+        let v = snapshot.val();
+        console.log(" ========== I CHECK CHANGES ========== ");
+        console.log("PLAYER INDEX   : " + playerIndex);
+        console.log("SNASHOT VAL    : " + v);
+        console.log("SUP ZERO       : " + (obj.nbTurn + playerIndex));
+        console.log("OBJ NBTURN     : " + (obj.nbTurn));
+
+        if ((v == (playerIndex + 1)) && ((obj.nbTurn + playerIndex) > 0)) {
+            console.log(" ==========CHANGES TO PUSH ========== ");
+            onEnemyPlayerPlay(uid, obj);
+        }
+
+        console.log(" ========== =============== ========== ");
+    }, /*{
+        onlyOnce: true
+    }*/);
+}
+
+//Quand un joueur ennemi va jouer un coup
+//On doit récupérer ces informations pour pouvoir les jouer ensuite
+function onEnemyPlayerPlay(uid, obj) {
+    console.log(" ==== ON ENEMY PLAY ==== ");
+    console.log("UID        : " + uid);
+    console.log(obj);
+
+
+    const refPiece = ref(db, "rooms/" + uid);
+
+    onValue(refPiece, (snapshot) => {
+        let piece1 = snapshot.val()['piece1'];
+        let piece2 = snapshot.val()['piece2'];
+
+        console.log(" ===== SNAPSHOT GET DB SHOT ===== ")
+        console.log(piece1);
+        console.log(piece2);
+        console.log(" ===== ==================== ===== ")
+
+        let move = piece1.split("/");
+        let posStart = move[0].split("_");
+        let posEnd = move[1].split("_");
+        obj.shotsToPerform.push(new DB_Shots(new Position(parseInt(posStart[0]), parseInt(posStart[1])), new Position(parseInt(posEnd[0]), parseInt(posEnd[1])), parseInt(move[2])));
+
+
+        if (piece2 != ""){
+            let move2 = piece2.split("/");
+            let posStart2 = move2[0].split("_");
+            let posEnd2 = move2[1].split("_");
+            obj.shotsToPerform.push(new DB_Shots(new Position(parseInt(posStart2[0]), parseInt(posStart2[1])), new Position(parseInt(posEnd2[0]), parseInt(posEnd2[1])), -1));
+        }
+
+        //piece1 = "";
+        //piece2 = "";
+
+        obj.playAllEnemyShots();
+    }, {
+        onlyOnce: true
+    });
+}
+
+//Fonction permettant de mettre à jour la DB
+export function SyncToDataBase(uid,playerIndex,shotToPush){
+    console.log("SYNC TO DATABASE !");
+
+    console.log(shotToPush);
+    console.log(playerIndex);
+    console.log(uid);
+    console.log("===================");
+
+
+    if (shotToPush.length > 0){
+        update(ref(db, 'rooms/' + uid), {
+            piece1: "" + shotToPush[0].startPosPlayerPlay.x + "_" + shotToPush[0].startPosPlayerPlay.y + "/" + shotToPush[0].endPosPlayerPlay.x + "_" + shotToPush[0].endPosPlayerPlay.y + "/" + shotToPush[0].IDTransformedPiece
+        });
+    }
+    if (shotToPush.length > 1){
+        update(ref(db, 'rooms/' + uid), {
+            piece2: "" + shotToPush[1].startPosPlayerPlay.x + "_" + shotToPush[1].startPosPlayerPlay.y + "/" + shotToPush[1].endPosPlayerPlay.x + "_" + shotToPush[1].endPosPlayerPlay.y
+        });
+    }
+    else {
+        update(ref(db, 'rooms/' + uid), {
+            piece2: ""
+        });
+    }
+
+    if (playerIndex == 0){
+        update(ref(db, 'rooms/' + uid),{
+            turn : 2
+        });
+    }
+    else{
+        update(ref(db, 'rooms/' + uid),{
+            turn : 1
+        });
+    }
+
+    shotToPush.length = 0;
+}
+
+export function addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff) {
+    //Save the finish game instance
+    let today = new Date();
+    let idHistory = "" + today.getDay() + "" + today.getMonth() + "" + today.getFullYear() + "" + today.getHours() + ":"+ today.getMinutes() + ":" + today.getSeconds();
+    writeHistory(idHistory, player, eloDiff, haveWin, nbCoup, opponent);
+}
+
+/**===============================================FUNCTION FOR PAGE HTML==================================================== **/
 //==============================================================================================================
 import {GameManager} from "./js/Model/Game.js";
-import {GameManagerOnline} from "./js/Model/GameOnline.js";
+import {GameManagerOnline, DB_Shots} from "./js/Model/GameOnline.js";
 import {Board} from "./js/Model/Board.js";
 import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./js/Model/Piece.js";
 import {Player} from "./js/Model/Player.js";
 import {MovementPiece, Movement} from "./js/Model/Movement.js";
 //==============================================================================================================
+let animation_value;
 
-//Reset les UIs affichés
+//========== Reset les UIs affichés
 function cleanEverything() {
-    dom_main_game.style.cssText = "display : none !important";
-    dom_main_home.style.display = "none";
-    dom_main_list_parties.style.cssText = "display : none !important";
-    dom_main_bg_parallax.style.display = "none";
-    dom_main_account.style.display = "none";
-    dom_main_menu_games.style.display = "none";
+    dom_main_game.style.cssText                 = "display : none !important";
+    dom_main_home.style.display                 = "none";
+    dom_main_list_parties.style.cssText         = "display : none !important";
+    dom_main_bg_parallax.style.display          = "none";
+    dom_main_account.style.display              = "none";
+    dom_main_menu_games.style.display           = "none";
+    dom_nav_partyName.style.display             = "none";
     //dom_main_OnlyProfil.style.display = "none";
-    dom_nav_options.style.display = "none";
+    dom_nav_options.style.display               = "none";
 
-    dom_nav_profil.style.display = "none";
-    dom_nav_authentification.style.display = "none";
-    dom_nav_deco.style.display = "none";
-    dom_nav_jouer.style.display = "block";
-    dom_createAccount.style.display = "none";
+    dom_nav_profil.style.display                = "none";
+    dom_nav_authentification.style.display      = "none";
+    dom_nav_deco.style.display                  = "none";
+    dom_nav_jouer.style.display                 = "block";
+    dom_createAccount.style.display             = "none";
+    dom_arrow_animation.style.display           = "block";
 
     //document.getElementsByTagName('body')[0].style.cssText = "background"
 }
@@ -208,19 +337,19 @@ function cleanEverything() {
 function startHomePage() {
     cleanEverything();
 
-    dom_nav_options.style.display = "block";
+    dom_nav_options.style.display           = "block";
     if (isAuthentified) {
         dom_nav_profil.style.display        = "block";
         dom_connection.style.display        = "none";
         dom_createAccount.style.display     = "none";
         dom_nav_deco.style.display          = "block";
+        dom_arrow_animation.style.display   = "none";
     } else {
         dom_nav_authentification.style.display  = "block";
         dom_connection.style.display            = "block";
     }
-    dom_main_home.style.display = "block";
+    dom_main_home.style.display                 = "block";
 }
-
 
 //========== Fonctions de jeu
 function startJouer() {
@@ -231,9 +360,11 @@ function startJouer() {
     console.log("JOUER STARTED !");
 
     if (isAuthentified) {
-        dom_main_menu_games.style.display = "block";
+        cleanEverything();
+        dom_nav_jouer.style.display         = "none";
+        dom_main_menu_games.style.display   = "block";
         dom_main_list_parties.style.cssText = "display : block !important";
-        dom_main_bg_parallax.style.display = "block";
+        dom_main_bg_parallax.style.display  = "block";
         refreshListParty();
     } else {
         startGame_local();
@@ -242,17 +373,22 @@ function startJouer() {
 
 //lancer une partie locale
 function startGame_local() {
-    dom_main_game.style.cssText = "display : flex !important";
-    game.innerHTML = "";
-    game_ui.innerHTML = "";
+    cleanEverything();
+    dom_nav_partyName.style.display = "block";
+    dom_nav_partyName.innerText     = "Partie locale";
+    dom_nav_jouer.style.display     = "none";
+    dom_main_game.style.cssText     = "display : flex !important";
+    game.innerHTML                  = "";
+    game_ui.innerHTML               = "";
 
     //Construction et lancement de la partie
-    let board = new Board();
+    let board   = new Board();
     gameManager = new GameManager(board);
     gameManager.start();
 }
 //Construction et lancement de la partie en ligne
-function startGame_online() {
+function startGame_online(name) {
+    console.log(" ++++++++++++ ONLINE ++++++++++++ ");
     cleanEverything();
     dom_nav_jouer.style.display     = "none";
 
@@ -261,25 +397,26 @@ function startGame_online() {
     game_ui.innerHTML   = "";
 
     //Création du plateau de jeu
-    let board = new Board();
+    let board   = new Board();
     //Création du gestionnaire de partie
-    gameManager = new GameManagerOnline(board);
-    gameManager.roomNameRef = gameNameOnlineActivity;
+    gameManager = new GameManagerOnline(board,gameNameOnlineActivity);
+    gameManager.initParty();
 
-    if (player == 0){
+    gameManager.playerIndex = player;
+
+    if (player == 0) {
+        console.log("JE SUIS LE PREMIER JOUEUR");
         //Si c'est le premier joueur a rentrer dans la partie
         //On ne connait que le premier joueur pour l'instant, celui qui vient de générer la partie
-        gameManager.setPlayerOneInformations(auth.currentUser.uid, true);
-        //gameManager.initParty();
+        gameManager.addAPlayerToTheRoom(auth.currentUser.uid);
         //On attend le second joueur pour lancer la partie
         wait2Player();
     }
     else{
         //Si c'est le joueur joueur a rentrer dans la partie
         //Alors on renseigne les joueurs et on commmence à jouer
-        gameManager.setPlayerOneInformations(gameNameOnlineActivity);
-        gameManager.setPlayerTwoInformations(auth.currentUser.uid, true);
-        //gameManager.initParty();
+        gameManager.addAPlayerToTheRoom(gameNameOnlineActivity);
+        gameManager.addAPlayerToTheRoom(auth.currentUser.uid);
         gameManager.start();
     }
 }
@@ -291,9 +428,9 @@ function wait2Player(){
     onValue(refUser, (snapshot)=>{
         if(snapshot.val() != ""){
             console.log("SECOND PLAYER JOIN THE GAME !");
-            gameManager.setPlayerTwoInformations(snapshot.val());
+            gameManager.addAPlayerToTheRoom(snapshot.val());
             gameManager.start();
-            refUser.off();
+            off(refUser);
         }
     });
 }
@@ -364,7 +501,7 @@ function swapConnectionCreation() {
 }
 
 async function startConnexion() {
-    console.log("CONNEXION START !");
+    console.log(" ========= CONNEXION START !");
 
     let email = document.getElementById("mail").value;
     let mdp = document.getElementById("psw").value;
@@ -382,13 +519,16 @@ async function startConnexion() {
             const user = userCredential.user;
             console.log(user);
             isAuthentified = true;
-            console.log("test");
+
+            console.log("CONNEXION :                DONE");
             startHomePage();
         })
         .catch((error) => {
-            console.log("ERREUR");
+            console.log("CONNEXION :                ERROR");
             const errorCode = error.code;
             const errorMessage = error.message;
+            dom_alert_message_toast.innerText = "Compte innexistant, veuillez en créer un !";
+            showToast(3000);
         });
 
 }
@@ -396,7 +536,9 @@ async function startConnexion() {
 //TODO Start intent to put the player in gameBoard
 function addParty(){
     const userId = getAuth().currentUser.uid;
+
     let name = document.getElementById("partyName").value;
+
     onValue(ref(db, 'users/' + userId), (snapshot) => {
         console.log(snapshot.val()['elo']);
         set(ref(db, 'rooms/' + userId), {
@@ -410,8 +552,9 @@ function addParty(){
             piece2: ""
         });
 
-        gameNameOnlineActivity = userId;
-        startGame_online();
+        //On construit une partie
+        gameNameOnlineActivity      = userId;
+        startGame_online(name);
     }, {
         onlyOnce: true
     });
@@ -428,20 +571,39 @@ function createTestRoom(){
         "            DeepRed room\n" +
         "            <button type=\"button\" class=\"btn btn-primary float-end p-4 disabled\">Complet</button>\n" +
         "        </li>\n" +
+        "        ";*/
+
+    return "<li class=\"list-group-item\">\n" +
+        "            DeepRed room\n" +
+        "            <button type=\"button\" class=\"btn btn-primary float-end p-4\" onclick='showToast()' >Complet</button>\n" +
+        "        </li>\n" +
         "        ";
 }
 
 function joinParty(name, user1){
     console.log(name);
     console.log(user1);
+    console.log("============ ============ ============");
 
-    const userId = getAuth().currentUser.uid;
-    update(ref(db, 'rooms/' + user1), {
-        player2: userId
+    onValue(ref(db, 'rooms/' + user1), (snapshshot) => {
+        let player2 = snapshshot.val()['player2'];
+        if (player2 == ""){
+            const userId = getAuth().currentUser.uid;
+            update(ref(db, 'rooms/' + user1), {
+                player2: userId
+            });
+            //Si on rejoint la partie en cour, on est nécessairement le joueur deux
+            player                  = 1;
+            gameNameOnlineActivity  = user1;
+            startGame_online(name);
+        }
+        else{
+            dom_alert_message_toast.innerText = "Partie pleine !";
+            showToast(3000);
+        }
+    }, {
+        onlyOnce: true
     });
-    player = 1;
-    gameNameOnlineActivity = user1;
-    startGame_online();
 }
 
 function refreshListParty(){
@@ -456,6 +618,7 @@ function refreshListParty(){
         for (const snapshotKey in snapshot.val()) {
             console.log("===============SNAPSHOT KEY=======================")
             console.log(snapshotKey);
+
             onValue(ref(db, 'rooms/' + snapshotKey), (snap) => {
                 console.log("===============SNAP VAL=======================")
                 console.log(snap.val());
@@ -465,10 +628,15 @@ function refreshListParty(){
                     listParty.innerHTML += createAParty(snap.val()['gameName'], snapshotKey);
                     let buttonJoinParty = document.getElementById(snapshotKey);
 
+                    console.log(buttonJoinParty);
+
                     buttonJoinParty.addEventListener("click", function () {
+                        console.log("I CLICK ON JOIN");
                         joinParty(snap.val()['gameName'], snapshotKey)
                     });
                 }
+            },{
+                onlyOnce: true
             });
 
         }
@@ -536,6 +704,32 @@ function loadPlaceHolder(){
 function startEditPreference(){
 }
 
+//Récupération préférences DB
+function retrivePreferences(){
+    console.log("GET VALUE FROM PREFERENCES");
+
+    const user = auth.currentUser.uid;
+    onValue(ref(db, 'users/' + user+ "/useAnimations"), (snapshot) => {
+        //Get animation value
+        //animation_value = (snapshot.val() == 0);
+        dom_switch_animation.checked = (snapshot.val() == 0);
+        console.log("preferences : " + dom_switch_animation.checked);
+    },{
+        onlyOnce : true
+    });
+}
+
+function updatePreferences(val) {
+    console.log("UPDATE PREFERENCES : " + val);
+
+    const user = auth.currentUser.uid;
+    update(ref(db, 'users/' + user), {
+        useAnimations: val
+    });
+
+    ANIMATION_PIECE = (val === 0);
+}
+
 function displayHistory(){
     //TODO Destroy old history display
     const user = auth.currentUser.uid;
@@ -577,14 +771,14 @@ dom_buttonCreateAccount.addEventListener("click", startCreerUnCompte);
 dom_buttonDeleteAccount.addEventListener("click", deleteInformationAccount);
 dom_history.addEventListener("click", displayHistory);
 dom_disconnectButton.addEventListener("click", logout);
-dom_dissmissButton.addEventListener("click", closeHistory);
+//dom_dissmissButton.addEventListener("click", closeHistory);
 dom_createGameButton.addEventListener("click", addParty);
 dom_buttonJouer.addEventListener("click", startJouer);
 dom_buttonEdited.addEventListener("click", appliedChangementUserInformation);
 dom_buttonUploadPP.addEventListener("click", upload);
 dom_ppimg.addEventListener("change", function(){readURL(dom_ppimg)});
 dom_forgot_psw.addEventListener('click', startForgotPsw);
-
+dom_classement.addEventListener('click', displayClassment);
 dom_button_swap.addEventListener('click', swapConnectionCreation);
 dom_button_swap_bis.addEventListener('click', swapConnectionCreation);
 dom_button_game_local.addEventListener('click', startGame_local);
@@ -593,6 +787,9 @@ dom_button_edit_preference.addEventListener('click',startEditPreference);
 dom_game_refresh.addEventListener('click',refreshListParty);
 dom_button_goOnline.addEventListener('click',function () {
     document.body.scrollIntoView(false);
+});
+preferencesAction.addEventListener('click', function (){
+    retrivePreferences();
 });
 
 window.onload = startHomePage;
