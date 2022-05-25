@@ -1,13 +1,14 @@
 /* ==================================================================================
     GAME ONLINE BEHAVIORS
 ================================================================================== */
-import {GameManager} from "./Game.js";
+import {animation_duration, Association_rock, GameManager, Shot} from "./Game.js";
 import {Board, main_color_piece, TransformPieces} from "./Board.js";
 import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./Piece.js";
 import {Player} from "./Player.js";
 import {MovementPiece, Movement} from "./Movement.js";
 import {downloadFileOnline} from "../../firebasStorage.js";
 import {deleteRoom, writeEloWinOrLoss, takePseudoAndElo,turnListener,SyncToDataBase} from "../../index.js";
+import {AnimatorBoard} from "./animator.js";
 /**================================================================================== */
 
 
@@ -31,7 +32,7 @@ export class GameManagerOnline extends GameManager {
         this.roomNameRef = roomNameRef;
         this.allPlayarsSet = false;
 
-        this.nbCurP         = 0;
+        this.nbCurP = 0;
     }
 
     //Déterminer si le joueur courrant est le premier joueur à jouer
@@ -54,102 +55,24 @@ export class GameManagerOnline extends GameManager {
         //On charge ensuite toutes les informations importantes de lancement de partie
         //Récupération de l'élo et du pseudo
         let obj = this;
-        takePseudoAndElo(uid,(pseudo, elo) =>{
+        takePseudoAndElo(uid, (pseudo, elo) => {
             curpToMAJ.UI_setName(pseudo);
             curpToMAJ.elo = elo;
         });
 
         //Récupération de la photo de profil
-        let url = downloadFileOnline(uid).then(function(url){
+        let url = downloadFileOnline(uid).then(function (url) {
             obj.setImage(curIndexP, url)
         });
     }
 
-    /*
-    setPlayerOneInformations(uid) {
-        console.log("============ SET PLAYER ONE INFO ==============");
-        this.player1 = uid;
-
-        //On charge ensuite toutes les informations importantes de lancement de partie
-        //Récupération de l'élo et du pseudo
-        let obj = this;
-        takePseudoAndElo(this.player1, (pseudo, elo) => {
-            obj.pseudoPlayer1 = pseudo;
-            obj.eloPlayer1 = elo;
-
-            if (!obj.oneSet) {
-                obj.initParty();
-            }
-
-            if (obj.players[0]) {
-
-                console.log(" >=====>MAJ PSEUDO");
-                console.log(obj.players[0]);
-                console.log(pseudo);
-
-                obj.players[0].UI_setName(pseudo);
-            }
-            console.log("   => PLAYER 1 SET");
-
-            if (obj.oneSet) {
-                obj.start();
-            } else {
-                obj.oneSet = true;
-            }
-        });
-
-        //Récupération de la photo de profil
-        this.downloadFilePlayer1(this.player1);
-        console.log("============ SET PLAYER ONE INFO END ==============");
-    }
-
-    setPlayerTwoInformations(uid) {
-        console.log("============ SET PLAYER TWO INFO ==============");
-        this.player2 = uid;
-
-        //On charge ensuite toutes les informations importantes de lancement de partie
-        //Récupération de l'élo et du pseudo
-        let obj = this;
-        takePseudoAndElo(this.player2,(pseudo, elo) =>{
-            obj.pseudoPlayer2   = pseudo;
-            obj.eloPlayer2      = elo;
-            if(!obj.oneSet) {
-                obj.initParty();
-            }
-            if(obj.players[1]) {
-                console.log("MAJ PSEUDO");
-                console.log(obj.players[1]);
-                console.log(pseudo);
-                obj.players[1].UI_setName(pseudo);
-            }
-
-            console.log("   => PLAYER 2 SET");
-
-            if(obj.oneSet){
-                //obj.start();
-            }else{
-                obj.oneSet = true;
-            }
-        });
-
-        //Récupération de la photo de profil
-        this.downloadFilePlayer2(this.player2);
-        console.log("============ SET PLAYER TWO INFO END ==============");
-    }
-    */
-
-    //Déterminer l'index du joueur courrant
-    setPlayerIndex(id) {
-        this.playerIndex = id;
-    }
-
-    initParty(needToStart){
+    initParty(needToStart) {
         console.log("INIT PARTY");
         //Clear and draw the empty board
         this.board.clear(true);
         this.board.drawBoard();
         //Init the board with players informations
-        this.players = this.board.initGameInstances("en attente","en attente");
+        this.players = this.board.initGameInstances("en attente", "en attente");
     }
 
     //Lancer la partie de jeu
@@ -163,7 +86,7 @@ export class GameManagerOnline extends GameManager {
         //console.log(this.playerIndex);
 
         //On construit le listener pour lire les coups joués par l'adversaire
-        turnListener(this.roomNameRef,this.playerIndex,this);
+        turnListener(this.roomNameRef, this.playerIndex, this);
         //turnListenerBis(this.currentPlayer);
 
         //On lance le tour
@@ -218,7 +141,14 @@ export class GameManagerOnline extends GameManager {
 
             //MAJ NUMBER OF TURNS
             return this.isFinished();
-        }else{
+        } else {
+            //For menace treatment
+            for (let pos of this.positionWithDanger) {
+                if (this.board.isGoodPos(pos.x, pos.y)) {
+                    this.board.setPossibleCaseWithMenaceOnIt(pos.x, pos.y, false);
+                }
+            }
+            this.cptMenace(this.players[this.nbTurn % this.players.length])
             console.log("==== NOT MY TURN ====");
         }
 
@@ -228,39 +158,41 @@ export class GameManagerOnline extends GameManager {
 
     //Jouer les coups ennemis dans notre instance courrante de jeu
     playAllEnemyShots() {
-        console.log("PLAY ALL ENNEMY SHOTS");
-        console.log(this.shotsToPerform);
-        console.log("========================");
+        //console.log("PLAY ALL ENNEMY SHOTS");
+        //console.log(this.shotsToPerform);
+        //console.log("========================");
 
         if (this.shotsToPerform.length !== 0) {
-            console.log("=> MORE THAN ZERO ELEM")
+            //console.log("=> MORE THAN ZERO ELEM")
             if (this.shotsToPerform.length == 1) {
-                console.log("=> ONE ELEM")
+                //console.log("=> ONE ELEM")
 
-                let startPos    = this.shotsToPerform[0].startPosPlayerPlay;
-                let endPos      = this.shotsToPerform[0].endPosPlayerPlay;
+                let startPos = this.shotsToPerform[0].startPosPlayerPlay;
+                let endPos = this.shotsToPerform[0].endPosPlayerPlay;
                 let idTransform = this.shotsToPerform[0].IDTransformedPiece;
 
-                let c           = this.board.getACase(startPos.x, startPos.y);
+                let c = this.board.getACase(startPos.x, startPos.y);
                 let pieceToMove = c.piece;
 
                 //Perform move
                 //We need to perform a variant of the shot with move animation
                 if (ANIMATION_PIECE) {
                     //Animation
-                    this.moveAPiece_animated(startPos, endPos, false);
+                    this.moveAnEnnemyPiece_animated(startPos, endPos, false, idTransform);
                 } else {
-                    console.log("MOOVE A PIECE");
-                    console.log(startPos);
-                    console.log(endPos);
 
                     //No animation
                     let pMoved = this.moveAPiece(startPos, endPos, false);
                     this.nbTurn++;
 
-                    //Transform
-                    //obj.transformEnnemyPiece(,id, oldP, pos);
+                    //Perform transformation (if needed)
+                    if (idTransform >= 0) {
+                        let ennemy = this.players[(1 - this.playerIndex)];
+                        this.transformEnnemyPiece(ennemy, idTransform, pieceToMove, endPos);
+                    }
 
+                    //MAJ UI Board for players
+                    this.board.commitChanges();
 
                     //Start a new turn
                     if (this.startANewTurn()) {
@@ -268,19 +200,6 @@ export class GameManagerOnline extends GameManager {
                         this.onEndingGame();
                     }
                 }
-
-                //Perform transformation (if needed)
-                if(idTransform>=0){
-                    let ennemy = this.players[(1 - this.playerIndex)];
-                    //console.log("NEED TO TRANSFORM A PIECE !");
-                    //console.log(ennemy);
-
-                    this.transformEnnemyPiece(ennemy,idTransform,pieceToMove,endPos);
-                }
-
-                //MAJ UI Board for players
-                this.board.commitChanges();
-
             } else {
                 //rock move
                 let startPos_king = this.shotsToPerform[0].startPosPlayerPlay;
@@ -345,7 +264,8 @@ export class GameManagerOnline extends GameManager {
 
         this.shotsToPerform = [];
     }
-    transformEnnemyPiece(player,id, oldP, pos){
+
+    transformEnnemyPiece(player, id, oldP, pos) {
         let newP = undefined;
         switch (id) {
             case  TransformPieces.TOWER :
@@ -381,8 +301,74 @@ export class GameManagerOnline extends GameManager {
         //player piece destruction
         oldP.possessor.destroyAPiece(oldP);
         //Maj last shot Piece Transformation
-
         this.allShots.peek()[0].IDTransformedPiece = id;
+    }
+
+    moveAnEnnemyPiece_animated(start, end, lightMove, idTransform) {
+        //Move a piece form start position to end position with animation
+
+        //Stop the onclk
+        this.gameStopped = true;
+
+        let start_case = this.board.getACase(start.x, start.y);
+        let end_case = this.board.getACase(end.x, end.y);
+
+        let moved = start_case.piece;
+        let possibly_eaten = end_case.piece;
+
+        let s = new Shot(moved, start, end, possibly_eaten, !lightMove, !moved.movedYet);
+        this.allShots.push([s]);
+
+        let animator = new AnimatorBoard(animation_duration, this.board);
+
+        let obj = this;
+        animator.onStart = function () {
+            obj.board.setAPieces(start_case.col, start_case.row, undefined);
+        }
+
+        animator.onEnd = function () {
+            obj.board.clear();
+            obj.board.drawBoard();
+
+            //Visual animation ending
+            obj.board.restart_no_animation_context();
+
+            //All the game ending, and also mechanism to preform another round
+            //Piece ate mechanism
+            if (possibly_eaten !== undefined) {
+                //If there is a  piece at the direction of displacement, its eaten
+                let pAte = obj.eatAPiece(possibly_eaten);
+
+                //We MAJ the cimetary visual after
+                if (pAte !== undefined && !lightMove) {
+                    obj.addCimetaryLayout(pAte, possibly_eaten);
+                }
+            }
+
+            //Perform the complete movement
+            obj.board.setAPieces(end_case.col, end_case.row, moved);
+            moved.movedYet = true;
+
+            //Cancel pause moment
+            obj.gameStopped = false;
+
+            if (idTransform >= 0) {
+                let ennemy = obj.players[(1 - obj.playerIndex)];
+                obj.transformEnnemyPiece(ennemy, idTransform, moved, end);
+            }
+
+            obj.onFinishTurn();
+            //Else go through a normal treatment
+            //Go through another round and start a new turn
+            if (obj.startANewTurn()) {
+                //If its finished, then stop the treatment
+                obj.board.commitChanges();
+                obj.onEndingGame();
+            }
+            obj.board.commitChanges();
+        }
+        //Animation function to call for perform a smooth displacement of the piece and not a teleportation
+        this.board.animatedDisplacement([start_case], [end_case], 1, animator);
     }
 
     //Quand la partie se termine
@@ -408,39 +394,6 @@ export class GameManagerOnline extends GameManager {
     /** =======================================================
      *              DATABASE INTERACTIONS
      *  ======================================================= **/
-
-    //Initialiser les données des deux joueurs (appel lecture DB)
-    //OLD
-    /*
-    initialiseDataPlayer() {
-        let obj = this;
-        takePseudoAndElo(this.player1,  (pseudo, elo) =>{
-            obj.pseudoPlayer1   = pseudo;
-            obj.eloPlayer1      = elo;
-            obj.players[0].UI_setName(pseudo);
-        });
-        takePseudoAndElo(this.player2,(pseudo, elo) =>{
-            obj.pseudoPlayer2   = pseudo;
-            obj.eloPlayer2      = elo;
-            obj.players[1].UI_setName(pseudo);
-        });
-    }
-
-    downloadFilePlayer1(player) {
-        let obj = this;
-        let url = downloadFileOnline(player).then
-        (function(url){
-            obj.setImage(0, url)
-        });
-    }
-
-    downloadFilePlayer2(player) {
-        let obj = this;
-        let url = downloadFileOnline(player).then
-        (function(url){
-            obj.setImage(1, url)});
-    }*/
-
     deleteRoomsInformation() {
         //Delete the room
         deleteRoom(this.roomNameRef);

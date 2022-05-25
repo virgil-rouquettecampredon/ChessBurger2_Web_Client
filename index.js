@@ -218,6 +218,7 @@ function onEnemyPlayerPlay(uid, obj) {
     console.log(" ==== ON ENEMY PLAY ==== ");
     console.log("UID        : " + uid);
     console.log(obj);
+    console.log(" ==== ============= ==== ");
 
 
     const refPiece = ref(db, "rooms/" + uid);
@@ -231,10 +232,28 @@ function onEnemyPlayerPlay(uid, obj) {
         console.log(piece2);
         console.log(" ===== ==================== ===== ")
 
-        let move = piece1.split("/");
-        let posStart = move[0].split("_");
-        let posEnd = move[1].split("_");
-        obj.shotsToPerform.push(new DB_Shots(new Position(parseInt(posStart[0]), parseInt(posStart[1])), new Position(parseInt(posEnd[0]), parseInt(posEnd[1])), parseInt(move[2])));
+        let move        = piece1.split("/");
+        let posStart    = move[0].split("_");
+        let posEnd      = move[1].split("_");
+        let idTransform = move[2];
+
+        console.log("COUT ADVERSE JOUE : ");
+        console.log(posStart);
+        console.log(posEnd);
+        console.log(idTransform);
+        console.log("=====================");
+
+        obj.shotsToPerform.push(new DB_Shots(
+            new Position(
+                parseInt(posStart[0]),
+                parseInt(posStart[1])
+            ),
+            new Position(
+                parseInt(posEnd[0]),
+                parseInt(posEnd[1])
+            ),
+            parseInt(move[2]))
+        );
 
 
         if (piece2 != ""){

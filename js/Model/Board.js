@@ -33,10 +33,10 @@ export let plate_color_piece               = ["#FFFFFF","#FFFFFF"];
 
 
 export const TransformPieces = {
+    QUEEN   : 0,
     TOWER   : 1,
-    QUEEN   : 2,
-    BISHOP  : 3,
-    KNIGHT  : 4,
+    BISHOP  : 2,
+    KNIGHT  : 3,
 }
 
 function createGameCSS() {
@@ -824,7 +824,7 @@ export class Board {
                 animator.drawingElement = p_dep.appearance;
                 animator.endBounds      = end.bounds;
 
-                console.log(animator);
+                //console.log(animator);
                 animator.launch();
             }
         }
