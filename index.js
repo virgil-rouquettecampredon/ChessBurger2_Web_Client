@@ -81,7 +81,8 @@ function writeUserData(userId, mail, pseudo, mdp) {
         elo: 1000,
         email: mail,
         bio: "Un g@meur avec un @ à la place du a",
-        password: mdp
+        password: mdp,
+        useAnimations : 0
     });
 }
 
@@ -696,6 +697,42 @@ function readURL(input) {
         btn_pp_ut.classList.add("disabled");
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+async function displayClassment(){
+    let mapClassement = new Map();
+
+    onValue(ref(db, 'users/'), (snapshot) => {
+        let i = 0;
+        for (const snapshotKey in snapshot.val()) {
+            onValue(ref(db, 'users/' + snapshotKey), (snap) => {
+                let pseudo = snap.val()['pseudo'];
+                let elo = snap.val()['elo'];
+
+                mapClassement.set(snapshotKey, {
+                    'elo': elo,
+                    'pseudo': pseudo
+                });
+                i+=1;
+                if (i == Object.keys(snapshot.val()).length){
+                    const mapSorted = new Map([...mapClassement.entries()].sort((a, b) => b[1]['elo'] - a[1]['elo']));
+
+                    //Display classement
+                    dom_classement_liste.innerHTML = "";
+                    //Display element on the history
+                    for (let el of mapSorted) {
+                        addElementClassementList(el[1]['elo'], el[1]['pseudo']);
+                    }
+                }
+                //console.log(mapClassement)
+            }, {
+                onlyOnce: true
+            });
+        }
+
+    }, {
+        onlyOnce: true
+    });
 }
 
 
