@@ -3,14 +3,20 @@
 
 // Import the functions you need from the SDKs you need
 import {initializeApp} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
-import {getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut
+} from "https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js";
 import {
     getDatabase,
     ref,
     onValue,
     set,
     remove,
-    update
+    update,
+    off
 } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
 
 import {downloadFile, deleteProfilePicture, uploadFile} from "./firebasStorage.js";
@@ -56,7 +62,7 @@ const loggin = async (email, pwd) => {
     return user;
 }
 
-function logout(){
+function logout() {
     const auth = getAuth();
     signOut(auth).then(() => {
         isAuthentified = false;
@@ -79,16 +85,16 @@ function writeUserData(userId, mail, pseudo, mdp) {
     });
 }
 
-function deleteAccount(){
+function deleteAccount() {
     auth.currentUser.delete()
 }
 
-export function deleteRoom(uid){
-    const refUser = ref(db, "rooms/"+uid);
+export function deleteRoom(uid) {
+    const refUser = ref(db, "rooms/" + uid);
     remove(refUser);
 }
 
-function appliedChangementUserInformation(){
+function appliedChangementUserInformation() {
     let pseudonyme = dom_edit_pseudo.value;
     let biographie = dom_edit_description.value
     const userId = getAuth().currentUser.uid;
@@ -100,14 +106,14 @@ function appliedChangementUserInformation(){
     dom_profil_description.innerText = biographie;
 }
 
-function startCreerUnCompte(){
+function startCreerUnCompte() {
     const auth = getAuth();
     console.log("===== CREATE ACCOUNT START ! =====");
 
 
-    let mail               = document.getElementById("account_mail").value;
-    let mdp                 = document.getElementById("account_psw").value;
-    let pseudo              = document.getElementById("account_pseudo").value;
+    let mail    = document.getElementById("account_mail").value;
+    let mdp     = document.getElementById("account_psw").value;
+    let pseudo  = document.getElementById("account_pseudo").value;
 
     console.log(" ====== CREATION ====== ");
     console.log(mail);
@@ -138,17 +144,19 @@ function startCreerUnCompte(){
         });
 }
 
-export function takePseudoAndElo(player, cb){
-    const refUser = ref(db, "users/"+player);
+export function takePseudoAndElo(player, cb) {
+    const refUser = ref(db, "users/" + player);
 
-    onValue(refUser, (snapshot)=>{
-        cb(snapshot.val()['pseudo'],snapshot.val()['elo']);
+    onValue(refUser, (snapshot) => {
+        cb(snapshot.val()['pseudo'], snapshot.val()['elo']);
     }, (errorObject) => {
         console.log('The read failed: ' + errorObject.name);
+    }, {
+        onlyOnce: true
     });
 }
 
-export function writeHistory(idHistory, player, eloDifference, win, coup, oppo){
+export function writeHistory(idHistory, player, eloDifference, win, coup, oppo) {
     const db = getDatabase();
     set(ref(db, 'history/' + player + '/' + idHistory), {
         eloDiff: eloDifference,
@@ -158,15 +166,15 @@ export function writeHistory(idHistory, player, eloDifference, win, coup, oppo){
     });
 }
 
-export function writeEloWinOrLoss(player, eloDiff){
+export function writeEloWinOrLoss(player, eloDiff) {
     update(ref(db, 'users/' + player), {
         elo: eloDiff
     });
 }
 
-function deleteInformationAccount(){
+function deleteInformationAccount() {
     const user = auth.currentUser.uid;
-    const refUser = ref(db, "users/"+user);
+    const refUser = ref(db, "users/" + user);
     remove(refUser);
     deleteAccount();
     deleteProfilePicture(user);
@@ -174,7 +182,7 @@ function deleteInformationAccount(){
     startHomePage();
 }
 
-function upload(){
+function upload() {
     let profilPic = document.getElementById("profilPic");
     const user = getAuth().currentUser.uid;
     uploadFile(user, file);
@@ -324,9 +332,9 @@ export function addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff) {
 import {GameManager} from "./js/Model/Game.js";
 import {GameManagerOnline, DB_Shots} from "./js/Model/GameOnline.js";
 import {Board} from "./js/Model/Board.js";
-import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./js/Model/Piece.js";
+import {Piece, King, Bishop, Pawn, Queen, Knight, Tower} from "./js/Model/Piece.js";
 import {Player} from "./js/Model/Player.js";
-import {MovementPiece, Movement} from "./js/Model/Movement.js";
+import {MovementPiece, Movement, Position} from "./js/Model/Movement.js";
 //==============================================================================================================
 let animation_value;
 
@@ -372,12 +380,6 @@ function startHomePage() {
 
 //========== Fonctions de jeu
 function startJouer() {
-    cleanEverything();
-    dom_nav_jouer.style.display     = "none";
-    //dom_nav_profil.style.display    = "block";
-
-    console.log("JOUER STARTED !");
-
     if (isAuthentified) {
         cleanEverything();
         dom_nav_jouer.style.display         = "none";
@@ -405,15 +407,20 @@ function startGame_local() {
     gameManager = new GameManager(board);
     gameManager.start();
 }
+
 //Construction et lancement de la partie en ligne
 function startGame_online(name) {
     console.log(" ++++++++++++ ONLINE ++++++++++++ ");
     cleanEverything();
-    dom_nav_jouer.style.display     = "none";
+
+    dom_nav_partyName.innerText         = name;
+    dom_nav_partyName.style.display     = "block";
+
+    dom_nav_jouer.style.display = "none";
 
     dom_main_game.style.cssText = "display : flex !important";
-    game.innerHTML      = "";
-    game_ui.innerHTML   = "";
+    game.innerHTML              = "";
+    game_ui.innerHTML           = "";
 
     //Création du plateau de jeu
     let board   = new Board();
@@ -430,8 +437,8 @@ function startGame_online(name) {
         gameManager.addAPlayerToTheRoom(auth.currentUser.uid);
         //On attend le second joueur pour lancer la partie
         wait2Player();
-    }
-    else{
+    } else {
+        console.log("JE SUIS LE SECOND JOUEUR");
         //Si c'est le joueur joueur a rentrer dans la partie
         //Alors on renseigne les joueurs et on commmence à jouer
         gameManager.addAPlayerToTheRoom(gameNameOnlineActivity);
@@ -440,12 +447,12 @@ function startGame_online(name) {
     }
 }
 
-function wait2Player(){
-    const user = auth.currentUser.uid;
-    const refUser = ref(db, "rooms/"+user +'/player2');
+function wait2Player() {
+    const user      = auth.currentUser.uid;
+    const refUser   = ref(db, "rooms/" + user + '/player2');
 
-    onValue(refUser, (snapshot)=>{
-        if(snapshot.val() != ""){
+    onValue(refUser, (snapshot) => {
+        if (snapshot.val() != "") {
             console.log("SECOND PLAYER JOIN THE GAME !");
             gameManager.addAPlayerToTheRoom(snapshot.val());
             gameManager.start();
@@ -507,14 +514,15 @@ function addElementClassementList(nbTrophee, NomDuJoueur) {
 //Quand l'utilisateur a oublié son mot de passe
 function startForgotPsw() {
 }
+
 //Changer entre connection et création de compte
 function swapConnectionCreation() {
     if (swap_crea_con) {
-        dom_connection.style.display        = "none";
-        dom_createAccount.style.display     = "block";
+        dom_connection.style.display    = "none";
+        dom_createAccount.style.display = "block";
     } else {
-        dom_connection.style.display        = "block";
-        dom_createAccount.style.display     = "none";
+        dom_connection.style.display    = "block";
+        dom_createAccount.style.display = "none";
     }
     swap_crea_con = !swap_crea_con;
 }
@@ -553,7 +561,10 @@ async function startConnexion() {
 }
 
 //TODO Start intent to put the player in gameBoard
-function addParty(){
+function addParty() {
+    //Réactiver le scroll
+
+
     const userId = getAuth().currentUser.uid;
 
     let name = document.getElementById("partyName").value;
@@ -564,7 +575,7 @@ function addParty(){
             player1: userId,
             player2: "",
             turn: 1,
-            ranking:snapshot.val()['elo'] ,
+            ranking: snapshot.val()['elo'],
             gameName: name,
             gameMode: "Normal",
             piece1: "",
@@ -578,6 +589,7 @@ function addParty(){
         onlyOnce: true
     });
 }
+
 //TODO PUT THE USER.UID PLAYER ONE IN ON HIDDEN
 function createAParty(name, user1) {
     return "<li class=\"list-group-item\">" + name + "\n" +
@@ -585,8 +597,8 @@ function createAParty(name, user1) {
         " </li>";
 }
 
-function createTestRoom(){
-    return "<li class=\"list-group-item\">\n" +
+function createTestRoom() {
+    /*return "<li class=\"list-group-item\">\n" +
         "            DeepRed room\n" +
         "            <button type=\"button\" class=\"btn btn-primary float-end p-4 disabled\">Complet</button>\n" +
         "        </li>\n" +
@@ -599,7 +611,8 @@ function createTestRoom(){
         "        ";
 }
 
-function joinParty(name, user1){
+function joinParty(name, user1) {
+    console.log("============ JOIN A PARTY ============");
     console.log(name);
     console.log(user1);
     console.log("============ ============ ============");
@@ -625,7 +638,7 @@ function joinParty(name, user1){
     });
 }
 
-function refreshListParty(){
+function refreshListParty() {
     console.log("===============REFRESH LIST PARTY=======================")
     let listParty = document.getElementById("party");
     listParty.innerHTML = createTestRoom();
@@ -641,9 +654,12 @@ function refreshListParty(){
             onValue(ref(db, 'rooms/' + snapshotKey), (snap) => {
                 console.log("===============SNAP VAL=======================")
                 console.log(snap.val());
-                if(snap.val()['player2'] == "") {
-                    console.log("CREATE A PARTY");
-                    console.log(snap.val()['gameName'] +" " + snapshotKey)
+
+                if (snap.val()['player2'] == "") {
+
+                    console.log("CREATE A PARTY DOM");
+                    console.log(snap.val()['gameName'] + " " + snapshotKey);
+
                     listParty.innerHTML += createAParty(snap.val()['gameName'], snapshotKey);
                     let buttonJoinParty = document.getElementById(snapshotKey);
 
@@ -665,6 +681,7 @@ function refreshListParty(){
 }
 
 let file;
+
 function readURL(input) {
     if (input.files && input.files[0]) {
         let btn_pp_ut = document.getElementById("buttonValidPP");
@@ -683,44 +700,48 @@ function readURL(input) {
 
 
 //========== Fonctions de profil
-function startProfil(){
+function startProfil() {
     cleanEverything();
     console.log("PROFIL STARTED !");
     const user = auth.currentUser.uid;
-    const refUser = ref(db, "users/"+user);
+    const refUser = ref(db, "users/" + user);
     console.log(db);
     console.log(refUser);
     console.log(user);
 
 
     //UI TO MODIFY
-    let profil_name         = document.getElementById("nameCoonected");
-    let profil_description  = document.getElementById("profil_description");
-    let profil_elo          = document.getElementById("profil_elo");
+    let profil_name = document.getElementById("nameCoonected");
+    let profil_description = document.getElementById("profil_description");
+    let profil_elo = document.getElementById("profil_elo");
 
-    onValue(refUser, (snapshot)=>{
+    onValue(refUser, (snapshot) => {
         profil_elo.innerText = snapshot.val()['elo'];
         profil_name.innerText = snapshot.val()['pseudo'];
         profil_description.innerText = snapshot.val()['bio'];
     }, (errorObject) => {
         console.log('The read failed: ' + errorObject.name);
+    }, {
+        onlyOnce: true
     });
 
     downloadFile(user);
 
-    dom_main_account.style.display           = "block";
+    dom_main_account.style.display = "block";
     //dom_main_OnlyProfil.style.display        = "block";
-    dom_nav_deco.style.display               = "block";
+    dom_nav_deco.style.display = "block";
 }
 
 //Changer place holder pour l'édition du profil
-function loadPlaceHolder(){
+function loadPlaceHolder() {
     dom_edit_pseudo.setAttribute('placeholder', dom_profil_name.innerText);
     dom_edit_description.setAttribute('placeholder', dom_profil_description.innerText);
 }
 
 //Sauvegarder les données de changement de préférences
-function startEditPreference(){
+function startEditPreference() {
+    console.log("ANIMATION : " + dom_switch_animation.value);
+    updatePreferences((dom_switch_animation.checked)? 0:1);
 }
 
 //Récupération préférences DB
@@ -749,7 +770,11 @@ function updatePreferences(val) {
     ANIMATION_PIECE = (val === 0);
 }
 
-function displayHistory(){
+function displayHistory() {
+    console.log("DISPLAY HISTORY");
+
+    dom_history_liste.innerHTML = "";
+
     //TODO Destroy old history display
     const user = auth.currentUser.uid;
     onValue(ref(db, 'history/' + user), (snapshot) => {
@@ -757,7 +782,7 @@ function displayHistory(){
 
         for (const snapshotKey in snapshot.val()) {
             console.log(snapshotKey);
-            onValue(ref(db, 'history/' + user+ '/' + snapshotKey), (snap) => {
+            onValue(ref(db, 'history/' + user + '/' + snapshotKey), (snap) => {
                 console.log(snap.val());
 
                 if (snap.val()['haveWin'] == 'win') {
@@ -772,12 +797,6 @@ function displayHistory(){
         onlyOnce: true
     });
 }
-
-function closeHistory(){
-    let history = document.getElementById("Historique_liste");
-    history.innerHTML = "";
-}
-
 
 
 //==============================================================================================================
@@ -795,16 +814,18 @@ dom_createGameButton.addEventListener("click", addParty);
 dom_buttonJouer.addEventListener("click", startJouer);
 dom_buttonEdited.addEventListener("click", appliedChangementUserInformation);
 dom_buttonUploadPP.addEventListener("click", upload);
-dom_ppimg.addEventListener("change", function(){readURL(dom_ppimg)});
+dom_ppimg.addEventListener("change", function () {
+    readURL(dom_ppimg)
+});
 dom_forgot_psw.addEventListener('click', startForgotPsw);
 dom_classement.addEventListener('click', displayClassment);
 dom_button_swap.addEventListener('click', swapConnectionCreation);
 dom_button_swap_bis.addEventListener('click', swapConnectionCreation);
 dom_button_game_local.addEventListener('click', startGame_local);
-dom_button_edit_profil.addEventListener('click',loadPlaceHolder);
-dom_button_edit_preference.addEventListener('click',startEditPreference);
-dom_game_refresh.addEventListener('click',refreshListParty);
-dom_button_goOnline.addEventListener('click',function () {
+dom_button_edit_profil.addEventListener('click', loadPlaceHolder);
+dom_button_edit_preference.addEventListener('click', startEditPreference);
+dom_game_refresh.addEventListener('click', refreshListParty);
+dom_button_goOnline.addEventListener('click', function () {
     document.body.scrollIntoView(false);
 });
 preferencesAction.addEventListener('click', function (){
