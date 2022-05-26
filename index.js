@@ -366,17 +366,6 @@ export function SyncToDataBase(uid,playerIndex,shotToPush){
         });
     }
 
-    if (playerIndex == 0){
-        update(ref(db, 'rooms/' + uid),{
-            turn : 2
-        });
-    }
-    else{
-        update(ref(db, 'rooms/' + uid),{
-            turn : 1
-        });
-    }
-
     shotToPush.length = 0;
 }
 
