@@ -45,6 +45,7 @@ const auth = getAuth(app);
 const db = getDatabase();
 let refTurn;
 let refLoose;
+let refPiece;
 console.log("GET DB             :       DONE");
 
 const loggin = async (email, pwd) => {
@@ -76,17 +77,17 @@ function logout() {
 }
 
 
-function writeUserData(userId, mail, pseudo, mdp) {
-    const db = getDatabase();
-    set(ref(db, 'users/' + userId), {
-        pseudo: pseudo,
-        elo: 1000,
-        email: mail,
-        bio: "Un g@meur avec un @ à la place du a",
-        password: mdp,
-        useAnimations : 0
-    });
-}
+    function writeUserData(userId, mail, pseudo, mdp) {
+        const db = getDatabase();
+        set(ref(db, 'users/' + userId), {
+            pseudo: pseudo,
+            elo: 1000,
+            email: mail,
+            bio: "Un g@meur avec un @ à la place du a",
+            password: mdp,
+            useAnimations : 0
+        });
+    }
 
 function deleteAccount() {
     auth.currentUser.delete()
@@ -242,10 +243,32 @@ export function turnListener(uid, playerIndex, obj) {
     }*/);
 }
 
+export function pieceListener(uid, playerIndex, obj){
+    refPiece= ref(db, "rooms/" + uid + '/piece1');
+    onValue(refTurn, (snapshot) => {
+        //turn listener simplification
+
+        let v = snapshot.val();
+        if (v == 1){
+            update(ref(db, 'rooms/' + uid),{
+                turn : 2
+            });
+        }
+        else{
+            update(ref(db, 'rooms/' + uid),{
+                turn : 1
+            });
+        }
+    }, /*{
+        onlyOnce: true
+    }*/);
+}
+
 export function destroyListener(){
     console.log("DESTROY LISTENER")
     off(refTurn);
     off(refLoose);
+    off(refPiece);
 }
 
 //Quand un joueur ennemi va jouer un coup
