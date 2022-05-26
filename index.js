@@ -855,8 +855,8 @@ function startProfil() {
 
 //Changer place holder pour l'édition du profil
 function loadPlaceHolder() {
-    dom_edit_pseudo.setAttribute('placeholder', dom_profil_name.innerText);
-    dom_edit_description.setAttribute('placeholder', dom_profil_description.innerText);
+    dom_edit_pseudo.setAttribute('value', dom_profil_name.innerText);
+    dom_edit_description.setAttribute('value', dom_profil_description.innerText);
 }
 
 //Sauvegarder les données de changement de préférences
@@ -968,22 +968,40 @@ dom_button_restart.addEventListener('click', function (){
 });
 dom_button_option.addEventListener('click', function (){
     //If the game is stoped, we need to indicate an option to go back to the main page
-    if(gameManager!==undefined && gameManager.constructor === GameManagerOnline) {
-        if (gameManager.gameFinish) {
-            //console.log(gameManager);
-            dom_button_option_goToHome.style.display    = "inline-block";
-            dom_button_ff.style.display                 = "none";
-            dom_text_ff.style.display                   = "none";
-            //console.log(dom_button_option_goToHome);
+    if(gameManager!==undefined) {
+        if (gameManager.constructor === GameManagerOnline) {
+            if (gameManager.gameFinish) {
+                //console.log(gameManager);
+                dom_button_option_goToHome.style.display = "inline-block";
+                dom_button_ff.style.display = "none";
+                dom_text_ff.style.display = "none";
+                //console.log(dom_button_option_goToHome);
+            } else {
+                if (gameManager.gameStarted) {
+                    dom_button_option_goToHome.style.display = "none";
+                    dom_button_ff.style.display = "inline-block";
+                    dom_text_ff.style.display = "block";
+                } else {
+                    dom_button_option_goToHome.style.display = "inline-block";
+                    dom_button_ff.style.display = "none";
+                    dom_text_ff.style.display = "none";
+                }
+            }
         } else {
-            //console.log("NO DISPLAY");
-            dom_button_option_goToHome.style.display    = "none";
-            dom_button_ff.style.display                 = "inline-block";
-            dom_text_ff.style.display                   = "block";
+            if(gameManager.gameFinish){
+                dom_button_restart.style.display = "inline-block";
+                dom_button_option_goToHome.style.display = "none";
+                dom_button_ff.style.display = "none";
+                dom_text_ff.style.display = "none";
+            }else{
+                dom_button_restart.style.display = "none";
+                dom_button_option_goToHome.style.display = "none";
+
+                dom_button_ff.style.display = "inline-block";
+                dom_text_ff.style.display = "block";
+            }
+            dom_button_option_goToHome.style.display = "none";
         }
-    }else{
-        //console.log("NO GM OR NO ONLINE");
-        dom_button_option_goToHome.style.display    = "none";
     }
 });
 dom_button_option_goToHome.addEventListener('click', function (){

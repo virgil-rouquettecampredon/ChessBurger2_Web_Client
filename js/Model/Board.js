@@ -218,11 +218,14 @@ export class Board {
 
         let div_offset = document.createElement("div");
         div_offset.setAttribute("class", "col-2 col-sm-1");
+
+        let val = ["A","B","C","D","E","F","G","H"];
+
         this.UI.row_infos.appendChild(div_offset);
         for (let i = 0; i < 8; i++) {
             let div = document.createElement("div");
             div.setAttribute("class","col");
-            div.innerText = "" + i;
+            div.innerText = val[i];
             div.style.textAlign = "center";
             div.style.fontSize = "1.1vw";
             this.UI.row_infos.appendChild(div);
@@ -233,11 +236,10 @@ export class Board {
         this.UI.col_infos.setAttribute("class", "col_infos col-2 col-sm-1 d-flex flex-column");
         this.UI.col_infos.style.color = "white";
         this.UI.col_infos.style.fontFamily = "'Permanent Marker', cursive";
-        let val = ["A","B","C","D","E","F","G","H"];
         for (let i = 0; i < 8; i++) {
             let div = document.createElement("div");
             div.setAttribute("class","p-2 text-center");
-            div.innerText = val[i];
+            div.innerText = "" + (7-i);
             div.style.display = "flex";
             div.style.flex = "1";
             div.style.justifyContent = "center";

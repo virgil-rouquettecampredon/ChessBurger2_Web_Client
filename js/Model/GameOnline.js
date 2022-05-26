@@ -42,7 +42,9 @@ export class GameManagerOnline extends GameManager {
 
         this.nbCurP = 0;
 
-        this.gameFinish = false;
+
+        //Gestion évènements DOM
+        this.gameStarted    = false;
     }
 
     //Déterminer si le joueur courrant est le premier joueur à jouer
@@ -87,6 +89,8 @@ export class GameManagerOnline extends GameManager {
 
     //Lancer la partie de jeu
     start() {
+        this.gameStarted = true;
+
         this.gameStopped = false;
         this.currentPlayer = this.players[this.playerIndex];
 
