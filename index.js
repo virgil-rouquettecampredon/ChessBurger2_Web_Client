@@ -514,7 +514,7 @@ function wait2Player() {
     const refUser   = ref(db, "rooms/" + user + '/player2');
     onValue(refUser, (snapshot) => {
         if (snapshot.val() != "") {
-            //console.log("SECOND PLAYER JOIN THE GAME !");
+            console.log("SECOND PLAYER JOIN THE GAME !");
             gameManager.addAPlayerToTheRoom(snapshot.val());
             gameManager.start();
             off(refUser);
@@ -952,10 +952,13 @@ dom_button_option.addEventListener('click', function (){
             dom_text_ff.style.display                   = "none";
             //console.log(dom_button_option_goToHome);
         } else {
-            //console.log("NO DISPLAY");
-            dom_button_option_goToHome.style.display    = "none";
-            dom_button_ff.style.display                 = "inline-block";
-            dom_text_ff.style.display                   = "block";
+            if(gameManager.gameStarted){
+                dom_button_option_goToHome.style.display    = "none";
+                dom_button_ff.style.display                 = "inline-block";
+                dom_text_ff.style.display                   = "block";
+            }else{
+                dom_button_option_goToHome.style.display    = "inliine-block";
+            }
         }
     }else{
         //console.log("NO GM OR NO ONLINE");
