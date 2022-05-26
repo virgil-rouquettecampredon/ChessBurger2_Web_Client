@@ -264,7 +264,7 @@ function onEnemyPlayerPlay(uid, obj) {
         //if(loose == obj.playerIndex){
         //    obj.winByFF();
         //}
-        if(loose != null){
+        //if(loose == null){
 
             //Nobody loosed, so we continue to play the enemy shot
             let piece1 = snapshot.val()['piece1'];
@@ -305,7 +305,7 @@ function onEnemyPlayerPlay(uid, obj) {
                 }
             }
             obj.playAllEnemyShots();
-        }
+        //}
     }, {
         onlyOnce: true
     });
