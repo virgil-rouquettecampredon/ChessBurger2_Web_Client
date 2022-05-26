@@ -898,14 +898,14 @@ preferencesAction.addEventListener('click', function (){
     retrivePreferences();
 });
 dom_button_ff.addEventListener('click', function (){
-    gameManager.onFFGame();
-
-    if(gameManager.constructor === GameManager) {
-        dom_button_restart.style.display = "inline-block";
+    if(gameManager && !gameManager.gameStopped) {
+        gameManager.onFFGame();
+        if (gameManager.constructor === GameManager) {
+            dom_button_restart.style.display = "inline-block";
+        }
+        dom_text_ff.style.display = "none";
+        dom_button_ff.style.display = "none";
     }
-    dom_text_ff.style.display = "none";
-    dom_button_ff.style.display = "none";
-
 })
 dom_button_restart.addEventListener('click', function (){
     startGame_local();

@@ -282,7 +282,7 @@ export class GameManagerOnline extends GameManager {
         }
     }
 
-    performHistorylooser(){
+    performHistoryLooser(){
         let p1 = this.players[0];
         let p2 = this.players[1];
 
@@ -444,7 +444,7 @@ export class GameManagerOnline extends GameManager {
         this.gameStopped = true;
 
         setOnLoose(this.roomNameRef, this.playerIndex);
-        this.performHistorylooser();
+        this.performHistoryLooser();
     }
 
     winByFF(){
