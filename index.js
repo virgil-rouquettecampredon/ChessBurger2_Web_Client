@@ -243,6 +243,7 @@ export function turnListener(uid, playerIndex, obj) {
 }
 
 export function destroyListener(){
+    console.log("DESTROY LISTENER")
     off(refTurn);
     off(refLoose);
 }
