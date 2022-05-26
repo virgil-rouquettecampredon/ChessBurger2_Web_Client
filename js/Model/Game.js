@@ -55,6 +55,7 @@ export class GameManager {
         this.lastPosPreSelected = undefined;
 
         this.nbTurn = 0;
+        this.gameFinish     = false;
     }
 
     /**
@@ -348,6 +349,7 @@ export class GameManager {
             mes_end = "égalité";
         }
 
+        this.gameFinish     = true;
         this.board.onEndOfGame(mes_start, mes_mid, mes_end);
     }
 
@@ -376,6 +378,7 @@ export class GameManager {
             mes_end = "ont gagné";
         }
 
+        this.gameFinish     = true;
         this.board.onEndOfGame(mes_start, mes_mid, mes_end);
     }
 

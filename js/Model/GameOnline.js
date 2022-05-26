@@ -44,7 +44,6 @@ export class GameManagerOnline extends GameManager {
 
 
         //Gestion évènements DOM
-        this.gameFinish     = false;
         this.gameStarted    = false;
     }
 
