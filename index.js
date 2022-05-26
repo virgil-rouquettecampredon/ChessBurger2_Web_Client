@@ -258,9 +258,12 @@ function onEnemyPlayerPlay(uid, obj) {
     const refPiece = ref(db, "rooms/" + uid);
     onValue(refPiece, (snapshot) => {
         //First we need to read the value of the loose elem
-        //let loose = snapshot.val()['loose'];
 
-        //if(loose === undefined){
+        let loose = snapshot.val()['loose'];
+        if(loose == obj.playerIndex){
+            obj.winByFF();
+        }
+        else{
 
             //Nobody loosed, so we continue to play the enemy shot
             let piece1 = snapshot.val()['piece1'];
