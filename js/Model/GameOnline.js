@@ -251,6 +251,8 @@ export class GameManagerOnline extends GameManager {
             //          Pat
             //          FF
 
+            this.gameFinish = true;
+
             //So we take the other player for loosing
             this.currentPlayer = this.players[1 - this.playerIndex];
             for (let p of this.players) {
@@ -265,6 +267,9 @@ export class GameManagerOnline extends GameManager {
     }
 
     performHistoryWinner(typeVict){
+        console.log("PERFORM HISTORY WIN !");
+        console.log("type de victoire : " + typeVict);
+
         let p1 = this.players[0];
         let p2 = this.players[1];
         if (this.playerIndex == 1) {
@@ -274,7 +279,7 @@ export class GameManagerOnline extends GameManager {
 
             let eloDiff2 = eloInflated(p2.elo, p1.elo, p1.UID, false);
             addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2, typeVict);
-        } else {
+        }else{
             //Set the data in DB for all players
             let eloDiff = eloInflated(p1.elo, p2.elo, p1.UID, true);
             addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff, typeVict);
@@ -394,6 +399,8 @@ export class GameManagerOnline extends GameManager {
     onEndingGame() {
         super.onEndingGame();
         SyncToDataBase(this.roomNameRef, this.playerIndex,[]);
+        //destroy all listener on loose
+        destroyTurnListener();
         this.gameFinish = true;
     }
 
@@ -426,8 +433,10 @@ export class GameManagerOnline extends GameManager {
         this.gameStopped = true;
 
         setOnLoose(this.roomNameRef, this.playerIndex);
-        //this.performHistoryLooser();
         this.gameFinish = true;
+
+        //destroy all listener on loose
+        destroyTurnListener();
     }
 
     winByFF(){
@@ -456,7 +465,9 @@ export class GameManagerOnline extends GameManager {
         }
         this.gameStopped = true;
         this.board.onEndOfGame(mes_start, mes_mid, mes_end);
+
         this.performHistoryWinner("Abandonner");
+
         this.gameFinish = true;
     }
 

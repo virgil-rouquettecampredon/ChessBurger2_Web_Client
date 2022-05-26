@@ -157,15 +157,16 @@ export function takePseudoAndElo(player, cb) {
     });
 }
 
+//idHistory, player, eloDiff, haveWin, nbCoup, opponent, typeVict
 export function writeHistory(idHistory, player, eloDifference, win, coup, oppo, typeVict) {
     const db = getDatabase();
 
     set(ref(db, 'history/' + player + '/' + idHistory), {
-        eloDiff: eloDifference,
-        haveWin: win,
-        nbCoup: coup,
-        opponent: oppo,
-        TypeVictoire: typeVict
+        eloDiff         : eloDifference,
+        haveWin         : win,
+        nbCoup          : coup,
+        opponent        : oppo,
+        TypeVictoire    : typeVict
     });
 
     console.log("=> IM WRITING IN THE DB");
@@ -239,6 +240,7 @@ function onEnemyPlayerPlay(uid, obj) {
     onValue(refPiece, (snapshot) => {
         //First we need to read the value of the loose elem
         let loose = snapshot.val()['loose'];
+
         if(loose === undefined){
             //Nobody loosed, so we continue to play the enemy shot
             let piece1 = snapshot.val()['piece1'];
@@ -278,11 +280,11 @@ function onEnemyPlayerPlay(uid, obj) {
                     obj.shotsToPerform.push(new DB_Shots(new Position(parseInt(posStart2[0]), parseInt(posStart2[1])), new Position(parseInt(posEnd2[0]), parseInt(posEnd2[1])), -1));
                 }
             }
+
             obj.playAllEnemyShots();
         }else{
             obj.winByFF();
         }
-
     }, {
         onlyOnce: true
     });
