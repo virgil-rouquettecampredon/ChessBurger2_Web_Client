@@ -199,7 +199,7 @@ function upload() {
 
 
 /** ==================================================FUNCTION FOR GM ==================================================== **/
-export function roomListener(uid, playerIndex, obj) {
+export function looseListener(uid, playerIndex, obj) {
     console.log("LOOSE LISTENER");
     refLoose = ref(db, "rooms/" + uid + '/loose');
     onValue(refLoose, (snapshot) => {
