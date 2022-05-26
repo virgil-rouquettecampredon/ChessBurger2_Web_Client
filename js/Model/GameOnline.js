@@ -15,7 +15,7 @@ import {
     SyncToDataBase,
     setOnLoose,
     addHistoryGame,
-    destroyTurnListener
+    destroyListener, looseListener
 } from "../../index.js";
 import {AnimatorBoard} from "./animator.js";
 /*================================================================================== */
@@ -97,6 +97,7 @@ export class GameManagerOnline extends GameManager {
 
         //On construit le listener pour lire les coups joués par l'adversaire
         turnListener(this.roomNameRef, this.playerIndex, this);
+        looseListener(this.roomNameRef, this.playerIndex, this);
         //turnListenerBis(this.currentPlayer);
 
         //On lance le tour
@@ -299,7 +300,7 @@ export class GameManagerOnline extends GameManager {
         }
 
         //MAJ LISTERNERS ON DESTROY
-        destroyTurnListener();
+        destroyListener();
         this.deleteRoomsInformation();
     }
 
@@ -414,7 +415,7 @@ export class GameManagerOnline extends GameManager {
         super.onEndingGame();
         SyncToDataBase(this.roomNameRef, this.playerIndex,[]);
         //destroy all listener on loose
-        destroyTurnListener();
+        destroyListener();
         this.gameFinish = true;
     }
 
@@ -450,7 +451,7 @@ export class GameManagerOnline extends GameManager {
         this.gameFinish = true;
 
         //destroy all listener on loose
-        destroyTurnListener();
+        destroyListener();
     }
 
     winByFF(){
