@@ -243,6 +243,7 @@ export function turnListener(uid, playerIndex, obj) {
 }
 
 export function destroyListener(){
+    console.log("DESTROY LISTENER")
     off(refTurn);
     off(refLoose);
 }
@@ -514,7 +515,7 @@ function wait2Player() {
     const refUser   = ref(db, "rooms/" + user + '/player2');
     onValue(refUser, (snapshot) => {
         if (snapshot.val() != "") {
-            //console.log("SECOND PLAYER JOIN THE GAME !");
+            console.log("SECOND PLAYER JOIN THE GAME !");
             gameManager.addAPlayerToTheRoom(snapshot.val());
             gameManager.start();
             off(refUser);
