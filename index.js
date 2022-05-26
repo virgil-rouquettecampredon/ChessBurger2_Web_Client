@@ -157,15 +157,19 @@ export function takePseudoAndElo(player, cb) {
     });
 }
 
-export function writeHistory(idHistory, player, eloDifference, win, coup, oppo) {
+export function writeHistory(idHistory, player, eloDifference, win, coup, oppo, typeVict) {
     const db = getDatabase();
 
     set(ref(db, 'history/' + player + '/' + idHistory), {
         eloDiff: eloDifference,
         haveWin: win,
         nbCoup: coup,
-        opponent: oppo
+        opponent: oppo,
+        TypeVictoire: typeVict
     });
+
+    console.log("=> IM WRITING IN THE DB");
+    console.log("=> ELO DIFF:" + eloDifference);
 }
 
 export function writeEloWinOrLoss(player, eloDiff) {
@@ -346,11 +350,11 @@ export function setOnLoose(uid, playerIndex){
     }
 }
 
-export function addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff) {
+export function addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff, typeVict) {
     //Save the finish game instance
     let today = new Date();
     let idHistory = "" + today.getDay() + "" + today.getMonth() + "" + today.getFullYear() + "" + today.getHours() + ":"+ today.getMinutes() + ":" + today.getSeconds();
-    writeHistory(idHistory, player, eloDiff, haveWin, nbCoup, opponent);
+    writeHistory(idHistory, player, eloDiff, haveWin, nbCoup, opponent, typeVict);
 }
 
 /**===============================================FUNCTION FOR PAGE HTML==================================================== **/
@@ -853,9 +857,9 @@ function displayHistory() {
                 //console.log(snap.val());
 
                 if (snap.val()['haveWin'] == 'win') {
-                    addElementHistoryList(true, snap.val()['opponent'], snap.val()['eloDiff'], snap.val()['nbCoup'], "Echec et mat");
+                    addElementHistoryList(true, snap.val()['opponent'], snap.val()['eloDiff'], snap.val()['nbCoup'], snap.val()['TypeVictoire']);
                 } else {
-                    addElementHistoryList(false, snap.val()['opponent'], snap.val()['eloDiff'], snap.val()['nbCoup'], "Echec et mat");
+                    addElementHistoryList(false, snap.val()['opponent'], snap.val()['eloDiff'], snap.val()['nbCoup'], snap.val()['TypeVictoire']);
                 }
             });
 

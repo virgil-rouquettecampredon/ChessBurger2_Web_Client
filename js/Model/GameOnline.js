@@ -258,29 +258,29 @@ export class GameManagerOnline extends GameManager {
             }
             //Compute local winner
             super.onEndingGame();
-            this.performHistoryWinner();
+            this.performHistoryWinner("Echec et Mat");
         }
 
         this.shotsToPerform = [];
     }
 
-    performHistoryWinner(){
+    performHistoryWinner(typeVict){
         let p1 = this.players[0];
         let p2 = this.players[1];
         if (this.playerIndex == 1) {
             //Set the data in DB for all players
             let eloDiff = eloInflated(p2.elo, p1.elo, p2.UID, true);
-            addHistoryGame(p2.UID, this.nbTurn, "win", p1.pseudo, eloDiff);
+            addHistoryGame(p2.UID, this.nbTurn, "win", p1.pseudo, eloDiff, typeVict);
 
             let eloDiff2 = eloInflated(p2.elo, p1.elo, p1.UID, false);
-            addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2);
+            addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2, typeVict);
         } else {
             //Set the data in DB for all players
-            let eloDiff = eloInflated(p2.elo, p1.elo, p1.UID, true);
-            addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff);
+            let eloDiff = eloInflated(p1.elo, p2.elo, p1.UID, true);
+            addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff, typeVict);
 
-            let eloDiff2 = eloInflated(p2.elo, p1.elo, p2.UID, false);
-            addHistoryGame(p2.UID, this.nbTurn, "loose", p1.pseudo, eloDiff2);
+            let eloDiff2 = eloInflated(p1.elo, p2.elo, p2.UID, false);
+            addHistoryGame(p2.UID, this.nbTurn, "loose", p1.pseudo, eloDiff2, typeVict);
         }
     }
 
@@ -456,7 +456,8 @@ export class GameManagerOnline extends GameManager {
         }
         this.gameStopped = true;
         this.board.onEndOfGame(mes_start, mes_mid, mes_end);
-        this.performHistoryWinner();
+        this.performHistoryWinner("Abandonner");
+        this.gameFinish = true;
     }
 
     //Initialiser l'image de profil du joueur ID
