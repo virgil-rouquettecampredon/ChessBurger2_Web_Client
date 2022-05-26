@@ -832,8 +832,8 @@ function startProfil() {
 
 //Changer place holder pour l'édition du profil
 function loadPlaceHolder() {
-    dom_edit_pseudo.setAttribute('placeholder', dom_profil_name.innerText);
-    dom_edit_description.setAttribute('placeholder', dom_profil_description.innerText);
+    dom_edit_pseudo.setAttribute('value', dom_profil_name.innerText);
+    dom_edit_description.setAttribute('value', dom_profil_description.innerText);
 }
 
 //Sauvegarder les données de changement de préférences
