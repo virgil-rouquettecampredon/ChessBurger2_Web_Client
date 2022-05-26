@@ -107,18 +107,17 @@
             </div>
 
             <div class="col-12 text-center">
-                <button class="btn_option btn" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">Options de jeu
-                </button>
+                <button id="optionMenuBTN" class="btn_option btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">Options de jeu</button>
             </div>
 
-            <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom"
-                 aria-labelledby="offcanvasBottomLabel">
+            <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+
                 <div class="offcanvas-header">
                     <h2 class="offcanvas-title" id="offcanvasBottomLabel">Options de jeu</h2>
                     <button type="button" class="btn-close btn-lg" data-bs-dismiss="offcanvas"
                             aria-label="Close"></button>
                 </div>
+
                 <div class="offcanvas-body row text-center">
 
                     <div class="col-6">
@@ -145,6 +144,10 @@
 
                         <button id="restartbtn" style="font-size: x-large" class="btn-success btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
                             Recommencer la partie
+                        </button>
+
+                        <button id="optionGoToMenu" style="font-size: x-large" class="btn-success btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+                            Retour au menu
                         </button>
                     </div>
 
@@ -649,7 +652,9 @@
     const dom_button_ff                 = document.getElementById("ffbtn");
     const dom_text_ff                   = document.getElementById("fftxt");
     const dom_button_restart            = document.getElementById("restartbtn");
+    const dom_button_option_goToHome    = document.getElementById("optionGoToMenu");
 
+    const dom_button_option             = document.getElementById("optionMenuBTN");
     const dom_button_edit_profil        = document.getElementById("editProfil");
     const dom_button_edit_preference    = document.getElementById("preferences");
     const dom_button_goOnline           = document.getElementById("buttonOnline");

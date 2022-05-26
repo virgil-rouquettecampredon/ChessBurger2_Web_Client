@@ -32,6 +32,8 @@ export class GameManagerOnline extends GameManager {
         this.allPlayarsSet = false;
 
         this.nbCurP = 0;
+
+        this.gameFinish = false;
     }
 
     //Déterminer si le joueur courrant est le premier joueur à jouer
@@ -282,28 +284,6 @@ export class GameManagerOnline extends GameManager {
         }
     }
 
-    performHistoryLooser(){
-        let p1 = this.players[0];
-        let p2 = this.players[1];
-
-        if (this.playerIndex == 1) {
-            //Set the data in DB for all players
-            let eloDiff = eloInflated(p2.elo, p1.elo, p1.UID, true);
-            addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff);
-
-            let eloDiff2 = eloInflated(p2.elo, p1.elo, p2.UID, false);
-            addHistoryGame(p2.UID, this.nbTurn, "loose", p1.pseudo, eloDiff2);
-        } else {
-            //Set the data in DB for all players
-            let eloDiff = eloInflated(p2.elo, p1.elo, p2.UID, true);
-            addHistoryGame(p2.UID, this.nbTurn, "win", p1.pseudo, eloDiff);
-
-            let eloDiff2 = eloInflated(p2.elo, p1.elo, p1.UID, false);
-            addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2);
-        }
-    }
-
-
     transformEnnemyPiece(player, id, oldP, pos) {
         let newP = undefined;
         switch (id) {
@@ -414,6 +394,7 @@ export class GameManagerOnline extends GameManager {
     onEndingGame() {
         super.onEndingGame();
         SyncToDataBase(this.roomNameRef, this.playerIndex,[]);
+        this.gameFinish = true;
     }
 
     onFFGame() {
@@ -440,11 +421,13 @@ export class GameManagerOnline extends GameManager {
             mes_mid = res;
             mes_end = "ont gagné";
         }
+
         this.board.onEndOfGame(mes_start, mes_mid, mes_end);
         this.gameStopped = true;
 
         setOnLoose(this.roomNameRef, this.playerIndex);
-        this.performHistoryLooser();
+        //this.performHistoryLooser();
+        this.gameFinish = true;
     }
 
     winByFF(){
@@ -499,28 +482,36 @@ export class GameManagerOnline extends GameManager {
 }
 
 
+
+//TODO enlever les listeners VIRGIL
+
 //Return the elo loose or win for the history game
 function eloInflated(eloWinner, eloLooser, player, winner) {
     //Do random number between 5 and 15
     let randomNumber = Math.random() * 10 + 5;
 
-    let eloWin = 0;
-    let eloLoose = 0;
+    let eloWin      = 0;
+    let eloLoose    = 0;
 
     if (eloWinner < eloLooser) {
         let eloCoefDiff = (eloLooser - eloWinner) / 3;
         //Limiter l'apport de la différence de points de victoire des deux joueurs
         eloCoefDiff = (eloCoefDiff < 0) ? 0 : (eloCoefDiff > 15) ? 15 : eloCoefDiff;
-        eloWin = eloCoefDiff + randomNumber * 2;
-        eloLoose = eloCoefDiff + (randomNumber * 1.5);
+        eloWin      = eloCoefDiff + randomNumber * 2;
+        eloLoose    = eloCoefDiff + (randomNumber * 1.5);
     } else {
         let eloCoefDiff = (eloLooser - eloWinner) / 5;
         //Limiter l'apport de la différence de points de victoire des deux joueurs
         eloCoefDiff = (eloCoefDiff < 0) ? 0 : (eloCoefDiff > 15) ? 15 : eloCoefDiff;
-        eloWin = eloCoefDiff + randomNumber * 0.5;
-        eloLoose = eloCoefDiff + randomNumber * 0.25;
+        eloWin      = eloCoefDiff + randomNumber * 0.5;
+        eloLoose    = eloCoefDiff + randomNumber * 0.25;
     }
 
+
+    eloWinner   = Math.floor(eloWinner);
+    eloLoose    = Math.floor(eloLoose);
+    eloWin      = Math.floor(eloWin);
+    eloLoose    = Math.floor(eloLoose);
     if (winner) {
         writeEloWinOrLoss(player, eloWinner + eloWin);
         return eloWin;
