@@ -44,7 +44,6 @@ console.log("INIT FIREBASE APP  :       DONE");
 const auth = getAuth(app);
 const db = getDatabase();
 let refTurn;
-let refLoose;
 console.log("GET DB             :       DONE");
 
 const loggin = async (email, pwd) => {
@@ -227,23 +226,8 @@ export function turnListener(uid, playerIndex, obj) {
     }*/);
 }
 
-export function looseListener(uid, playerIndex, obj) {
-    console.log("Looser LISTENER");
-    console.log("================");
-    refLoose = ref(db, "rooms/" + uid + '/loose');
-    onValue(refTurn, (snapshot) => {
-        //loose listener simplification
-        if (snapshot.val() == "yes"){
-            obj.winByFF();
-        }
-    }, /*{
-        onlyOnce: true
-    }*/);
-}
-
 export function destroyListener(){
     off(refTurn);
-    off(refLoose);
 }
 
 //Quand un joueur ennemi va jouer un coup
@@ -304,9 +288,7 @@ function onEnemyPlayerPlay(uid, obj) {
                 }
             }
             obj.playAllEnemyShots();
-        //}else{
-        //    obj.winByFF();
-        //}
+        }
     }, {
         onlyOnce: true
     });
@@ -358,8 +340,9 @@ export function SyncToDataBase(uid,playerIndex,shotToPush){
 }
 
 export function setOnLoose(uid, playerIndex){
+    let playerIndexage = 1 - playerIndex
     update(ref(db, 'rooms/' + uid), {
-        loose: "yes"
+        loose: playerIndexage
     });
 
     if (playerIndex == 0){
