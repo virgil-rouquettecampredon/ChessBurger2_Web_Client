@@ -282,25 +282,28 @@ export class Board {
         this.UI.endScreen.setAttribute("id", "end_screen");
         this.UI.endScreen.setAttribute("class", "cover-container d-flex h-100 p-3 mx-auto flex-column text-center");
 
-        let finish_header = document.createElement("header");
-        finish_header.setAttribute("class","masthead mb-auto");
-        let finish_h_div = document.createElement("div");
-        finish_h_div.setAttribute("class","inner");
+        //let finish_header = document.createElement("header");
+        //finish_header.setAttribute("class","masthead mb-auto");
+        //let finish_h_div = document.createElement("div");
+        //finish_h_div.setAttribute("class","inner");
 
         this.UI.endScreen_startmessage = document.createElement("h3");
-        this.UI.endScreen_startmessage.setAttribute("class","start masthead-brand player");
-        finish_h_div.appendChild(this.UI.endScreen_startmessage);
-        finish_header.appendChild(finish_h_div);
-        this.UI.endScreen.appendChild(finish_header);
+        this.UI.endScreen_startmessage.setAttribute("class","start");
+        //finish_h_div.appendChild(this.UI.endScreen_startmessage);
+        //finish_header.appendChild(finish_h_div);
+        //this.UI.endScreen.appendChild(finish_header);
+
+        this.UI.endScreen.appendChild(this.UI.endScreen_startmessage);
 
 
 
         let finish_main = document.createElement("main");
-        finish_main.setAttribute("class", "inner cover");
-        finish_main.setAttribute("role", "main");
+        //finish_main.setAttribute("class", "inner cover");
+        //finish_main.setAttribute("role", "main");
 
-        this.UI.endScreen_midmessage = document.createElement("h3");
-        this.UI.endScreen_midmessage.setAttribute("class", "mid cover-heading");
+        this.UI.endScreen_midmessage = document.createElement("h1");
+        //this.UI.endScreen_midmessage.setAttribute("class", "mid cover-heading");
+        this.UI.endScreen_midmessage.setAttribute("class", "message");
         finish_main.appendChild(this.UI.endScreen_midmessage);
         this.UI.endScreen.appendChild(finish_main);
 
@@ -316,10 +319,7 @@ export class Board {
         finish_footer.appendChild(finish_d_footer);
         this.UI.endScreen.appendChild(finish_footer);
 
-
-        //this.UI.endScreen.style.display = "none !important";
         this.UI.endScreen.style.cssText = "display : none !important";
-        //this.UI.endScreen.style.cssText = "display : flex !important";
 
 
 

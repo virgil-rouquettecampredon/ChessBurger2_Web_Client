@@ -7,10 +7,9 @@ import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./Piece.js";
 import {Player} from "./Player.js";
 import {MovementPiece, Movement} from "./Movement.js";
 import {downloadFileOnline} from "../../firebasStorage.js";
-import {deleteRoom, writeEloWinOrLoss, takePseudoAndElo,turnListener,SyncToDataBase} from "../../index.js";
+import {deleteRoom, writeEloWinOrLoss, takePseudoAndElo,turnListener,SyncToDataBase, setOnLoose, addHistoryGame} from "../../index.js";
 import {AnimatorBoard} from "./animator.js";
-/**================================================================================== */
-
+/*================================================================================== */
 
 //Coups en DB plus légers
 export class DB_Shots{
@@ -80,7 +79,7 @@ export class GameManagerOnline extends GameManager {
         this.gameStopped = false;
         this.currentPlayer = this.players[this.playerIndex];
 
-        console.log(" => START THE GAME !");
+        console.log("START THE GAME");
         //console.log(this.players);
         //console.log(this.roomNameRef);
         //console.log(this.playerIndex);
@@ -99,13 +98,14 @@ export class GameManagerOnline extends GameManager {
 
     //Lancer un tour de jeu
     startANewTurn() {
+        this.board.commitChanges();
         console.log("=============== START A NEW TURN ==================");
         //if we were the last player to play, then MAJ db first with our play
         if (this.isMyTurn && this.nbTurn != 0) {
 
-            console.log("MAJ PLAY");
+            //console.log("MAJ PLAY");
             for (let s of this.allShots.peek()) {
-                console.log(s);
+                //console.log(s);
                 this.onCurrentPlayerPlay(new DB_Shots(s.startPos, s.endPos, s.IDTransformedPiece));
             }
             SyncToDataBase(this.roomNameRef, this.playerIndex, this.shotsToPush);
@@ -123,7 +123,6 @@ export class GameManagerOnline extends GameManager {
 
         //if its not your turn, don't try to compute anything
         if (this.isMyTurn) {
-            //this.nbTurn++;
             console.log("==== MY TURN ====");
             //console.log("==== ROCK ====");
             //Next we can compute the special rock movement
@@ -139,17 +138,35 @@ export class GameManagerOnline extends GameManager {
             //We can independently compute the dangerous Case by calculating the possible position for each dangerous enemy neighbour
             this.performDanger(this.currentPlayer);
 
-            //MAJ NUMBER OF TURNS
             return this.isFinished();
         } else {
-            //For menace treatment
+            console.log("==== NOT MY TURN ====");
             for (let pos of this.positionWithDanger) {
                 if (this.board.isGoodPos(pos.x, pos.y)) {
                     this.board.setPossibleCaseWithMenaceOnIt(pos.x, pos.y, false);
                 }
             }
-            this.cptMenace(this.players[this.nbTurn % this.players.length])
-            console.log("==== NOT MY TURN ====");
+            this.positionWithDanger = [];
+
+            //===== For menace treatment
+            //For just a MAJ for the player who get menaced, no need to recompute all possible movements
+            for (let p of this.players) {
+                this.computePossibleMvts(p);
+            }
+
+            //Then cpt the new menace
+            for (let p of this.players) {
+                //this.cptMenace(p);
+                this.cptMenace(p);
+            }
+
+            //And finally maj the UI
+            for (let pos of this.positionWithDanger) {
+                if (this.board.isGoodPos(pos.x, pos.y)) {
+                    this.board.setPossibleCaseWithMenaceOnIt(pos.x, pos.y, true);
+                }
+            }
+            this.board.commitChanges();
         }
 
         //Not your turn, so you are still able to play in theory
@@ -163,16 +180,13 @@ export class GameManagerOnline extends GameManager {
         //console.log("========================");
 
         if (this.shotsToPerform.length !== 0) {
-            //console.log("=> MORE THAN ZERO ELEM")
             if (this.shotsToPerform.length == 1) {
-                //console.log("=> ONE ELEM")
+                let startPos        = this.shotsToPerform[0].startPosPlayerPlay;
+                let endPos          = this.shotsToPerform[0].endPosPlayerPlay;
+                let idTransform     = this.shotsToPerform[0].IDTransformedPiece;
 
-                let startPos = this.shotsToPerform[0].startPosPlayerPlay;
-                let endPos = this.shotsToPerform[0].endPosPlayerPlay;
-                let idTransform = this.shotsToPerform[0].IDTransformedPiece;
-
-                let c = this.board.getACase(startPos.x, startPos.y);
-                let pieceToMove = c.piece;
+                let c               = this.board.getACase(startPos.x, startPos.y);
+                let pieceToMove     = c.piece;
 
                 //Perform move
                 //We need to perform a variant of the shot with move animation
@@ -180,7 +194,6 @@ export class GameManagerOnline extends GameManager {
                     //Animation
                     this.moveAnEnnemyPiece_animated(startPos, endPos, false, idTransform);
                 } else {
-
                     //No animation
                     let pMoved = this.moveAPiece(startPos, endPos, false);
                     this.nbTurn++;
@@ -196,7 +209,7 @@ export class GameManagerOnline extends GameManager {
 
                     //Start a new turn
                     if (this.startANewTurn()) {
-                        //If its finished, then stop the treatment
+                        //If it's finished, then stop the treatment
                         this.onEndingGame();
                     }
                 }
@@ -225,7 +238,7 @@ export class GameManagerOnline extends GameManager {
                     this.nbTurn++;
                     //Start a new turn
                     if (this.startANewTurn()) {
-                        //If its finished, then stop the treatment
+                        //If it's finished, then stop the treatment
                         this.onEndingGame();
                     }
                 }
@@ -236,34 +249,60 @@ export class GameManagerOnline extends GameManager {
             //          Pat
             //          FF
 
+            //So we take the other player for loosing
             this.currentPlayer = this.players[1 - this.playerIndex];
-
             for (let p of this.players) {
                 this.computePossibleMvts(p);
             }
-
             //Compute local winner
             super.onEndingGame();
-            if (this.playerIndex == 1) {
-                //Set the data in DB for all players
-
-                let eloDiff = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player2, true);
-                this.addHistoryGame(this.player2, this.nbTurn, "win", this.pseudoPlayer1, eloDiff);
-
-                let eloDiff2 = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player1, false);
-                this.addHistoryGame(this.player1, this.nbTurn, "loose", this.pseudoPlayer2, eloDiff2);
-            } else {
-                //Set the data in DB for all players
-                let eloDiff = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player1, true);
-                this.addHistoryGame(this.player1, this.nbTurn, "win", this.pseudoPlayer2, eloDiff);
-
-                let eloDiff2 = eloInflated(this.eloPlayer2, this.eloPlayer1, this.player2, false);
-                this.addHistoryGame(this.player2, this.nbTurn, "loose", this.pseudoPlayer1, eloDiff2);
-            }
+            this.performHistoryWinner();
         }
 
         this.shotsToPerform = [];
     }
+
+    performHistoryWinner(){
+        let p1 = this.players[0];
+        let p2 = this.players[1];
+        if (this.playerIndex == 1) {
+            //Set the data in DB for all players
+            let eloDiff = eloInflated(p2.elo, p1.elo, p2.UID, true);
+            addHistoryGame(p2.UID, this.nbTurn, "win", p1.pseudo, eloDiff);
+
+            let eloDiff2 = eloInflated(p2.elo, p1.elo, p1.UID, false);
+            addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2);
+        } else {
+            //Set the data in DB for all players
+            let eloDiff = eloInflated(p2.elo, p1.elo, p1.UID, true);
+            addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff);
+
+            let eloDiff2 = eloInflated(p2.elo, p1.elo, p2.UID, false);
+            addHistoryGame(p2.UID, this.nbTurn, "loose", p1.pseudo, eloDiff2);
+        }
+    }
+
+    performHistorylooser(){
+        let p1 = this.players[0];
+        let p2 = this.players[1];
+
+        if (this.playerIndex == 1) {
+            //Set the data in DB for all players
+            let eloDiff = eloInflated(p2.elo, p1.elo, p1.UID, true);
+            addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff);
+
+            let eloDiff2 = eloInflated(p2.elo, p1.elo, p2.UID, false);
+            addHistoryGame(p2.UID, this.nbTurn, "loose", p1.pseudo, eloDiff2);
+        } else {
+            //Set the data in DB for all players
+            let eloDiff = eloInflated(p2.elo, p1.elo, p2.UID, true);
+            addHistoryGame(p2.UID, this.nbTurn, "win", p1.pseudo, eloDiff);
+
+            let eloDiff2 = eloInflated(p2.elo, p1.elo, p1.UID, false);
+            addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2);
+        }
+    }
+
 
     transformEnnemyPiece(player, id, oldP, pos) {
         let newP = undefined;
@@ -374,13 +413,72 @@ export class GameManagerOnline extends GameManager {
     //Quand la partie se termine
     onEndingGame() {
         super.onEndingGame();
-        roomRef.child("loose").setValue("yes");
-        roomRef.child("turn").setValue(2 - playerIndex);
+        SyncToDataBase(this.roomNameRef, this.playerIndex,[]);
+    }
+
+    onFFGame() {
+        let mes_start = "Vous avez abandonné";
+        let mes_mid = "";
+        let mes_end = "";
+
+        //Perform the end of the game
+        let playersWin = [];
+        for (let p of this.players) {
+            if (!p.isAlly(this.currentPlayer)) {
+                playersWin.push(p);
+            }
+        }
+        if (playersWin.length === 1) {
+            mes_mid = playersWin[0].pseudo;
+            mes_end = "a gagné";
+        } else {
+            let res = "";
+            for (let p of playersWin) {
+                res += p.pseudo + "-";
+            }
+            res = res.substring(0, res.length - 1);
+            mes_mid = res;
+            mes_end = "ont gagné";
+        }
+        this.board.onEndOfGame(mes_start, mes_mid, mes_end);
+        this.gameStopped = true;
+
+        setOnLoose(this.roomNameRef, this.playerIndex);
+        this.performHistorylooser();
+    }
+
+    winByFF(){
+        let mes_start = "Vous avez gagné";
+        let mes_mid = "";
+        let mes_end = "";
+
+        //Perform the end of the game
+        let playersWin = [];
+        for (let p of this.players) {
+            if (!p.isAlly(this.currentPlayer)) {
+                playersWin.push(p);
+            }
+        }
+        if (playersWin.length === 1) {
+            mes_mid = playersWin[0].pseudo;
+            mes_end = "a abandonné";
+        } else {
+            let res = "";
+            for (let p of playersWin) {
+                res += p.pseudo + "-";
+            }
+            res = res.substring(0, res.length - 1);
+            mes_mid = res;
+            mes_end = "ont abandonné";
+        }
+        this.gameStopped = true;
+        this.board.onEndOfGame(mes_start, mes_mid, mes_end);
+        this.performHistoryWinner();
     }
 
     //Initialiser l'image de profil du joueur ID
     setImage(id, uri) {
-        console.log("SET IMAGE : " + id);
+        //console.log("SET IMAGE : " + id);
         this.players[id].UI_setPorfilPicFromLocalFile(uri);
     }
 

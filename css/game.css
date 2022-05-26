@@ -2,6 +2,8 @@
     margin: auto;
 }
 
+/*====================================================*/
+/*Game and gameboard elements*/
 #game{
     width : 50%;
     height: 50%;
@@ -24,11 +26,12 @@
     height : 100%;
     position: relative;
 }
+/*====================================================*/
 
 
 /*====================================================*/
 /*ALL SCREENS GAMES ELEMENTS*/
-/*TRANSFORM SCREEN ELEMENTS*/
+/*transform screen elements*/
 #boardWrapper #canvasWrapper #transform_screen {
     top     : 0;
     left    : 12px;
@@ -69,7 +72,7 @@
     font-size: 1.2vw;
 }
 
-/*End screen*/
+/*End screen elements*/
 #boardWrapper #canvasWrapper #end_screen {
     top: 0;
     left: 12px;
@@ -82,7 +85,7 @@
     color: white;
 }
 
-#boardWrapper #canvasWrapper #end_screen .mid{
+#boardWrapper #canvasWrapper #end_screen .message{
     color: var(--colorSecondary);
 }
 /*====================================================*/
@@ -94,23 +97,22 @@
     justify-content: space-evenly;
     flex: 1;
 }
-
 #gameUI div.activePlayer {
     color: var(--colorActivePlayer_dark);
 }
-
 #gameUI div.activePlayer div.card{
     background-color: var(--colorActivePlayer_light);
     border-color: var(--colorActivePlayer);
     border-width: 2px;
 }
-
-
 /*PLAYER DATA UI*/
 #gameUI .playerData{
     position: relative;
 }
+/*====================================================*/
 
+
+/*====================================================*/
 /*Loading element player*/
 /*https://codepen.io/boshea93/pen/abvjppx*/
 #gameUI .waiting {
@@ -150,6 +152,7 @@
     animation: ani3 1.25s infinite;
 }
 
+/*Button waiting animation*/
 @keyframes ani1 {
     0% {
         transform: scale(1.0);
@@ -171,7 +174,6 @@
         transform: scale(1.0)
     }
 }
-
 @keyframes ani2 {
     0% {
         transform: scale(1.0);
@@ -193,7 +195,6 @@
         transform: scale(1.0);
     }
 }
-
 @keyframes ani3 {
     0% {
         transform: scale(1.0);

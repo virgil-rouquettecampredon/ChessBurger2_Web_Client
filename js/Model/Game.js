@@ -317,9 +317,9 @@ export class GameManager {
     }
 
     onEndingGame() {
-        console.log("GAME IS FINISH !");
+        //console.log("GAME IS FINISH !");
 
-        let mes_start = "Partie termininée";
+        let mes_start = "Partie terminée";
         let mes_mid = "";
         let mes_end = "";
 
@@ -346,6 +346,34 @@ export class GameManager {
         } else {
             mes_mid = "";
             mes_end = "égalité";
+        }
+
+        this.board.onEndOfGame(mes_start, mes_mid, mes_end);
+    }
+
+    onFFGame() {
+        let mes_start = "Partie terminée";
+        let mes_mid = "";
+        let mes_end = "";
+
+        //Perform the end of the game
+        let playersWin = [];
+        for (let p of this.players) {
+            if (!p.isAlly(this.currentPlayer)) {
+                playersWin.push(p);
+            }
+        }
+        if (playersWin.length === 1) {
+            mes_mid = playersWin[0].pseudo;
+            mes_end = "a gagné";
+        } else {
+            let res = "";
+            for (let p of playersWin) {
+                res += p.pseudo + "-";
+            }
+            res = res.substring(0, res.length - 1);
+            mes_mid = res;
+            mes_end = "ont gagné";
         }
 
         this.board.onEndOfGame(mes_start, mes_mid, mes_end);
@@ -385,6 +413,11 @@ export class GameManager {
                         for (let pieceEnemy of p.getPiecesPlayer()) {
                             for (let eatable of pieceEnemy.tastyPieces) {
                                 if (eatable === piece) {
+
+                                    //console.log("COMPUTE MENACE");
+                                    //console.log(this.board.getPiecePosition(pieceEnemy));
+                                    //console.log(this.board.getPiecePosition(piece));
+
                                     //If pieceEnemy menace our victoryPieceCondition
                                     this.positionWithDanger.push(this.board.getPiecePosition(pieceEnemy));
                                     this.positionWithDanger.push(this.board.getPiecePosition(piece));
@@ -642,6 +675,10 @@ export class GameManager {
 
     //Computing the possible movement that can perform the pieces of the player
     computePossibleMvts(player) {
+        //console.log("COMPUTE POSSIBLE MOV");
+        //console.log(player);
+
+
         if(affichage) {
             console.log("=======================================");
             console.log("COMPUTE POSSIBLE MOVES PLAYER");
@@ -658,11 +695,12 @@ export class GameManager {
         }
 
         for (let p_player of pieces_player) {
-            if(affichage) {
-                console.log(" ===================================== ");
-                console.log("    => piece to watch : ");
-                console.log(p_player);
-            }
+
+            //if(affichage) {
+            //    console.log(" ===================================== ");
+            //    console.log("    => piece to watch : ");
+            //    console.log(p_player);
+            //}
 
             //Don't forget to clear that list for reset the menace
             p_player.clearTastyPieces();
@@ -671,10 +709,10 @@ export class GameManager {
             let piece_pos   = this.board.getPiecePosition(p_player);
             let mvt_pp      = p_player.getAllPossibleMvt(piece_pos.x, piece_pos.y);
 
-            if(affichage) {
-                console.log(piece_pos);
-                console.log(mvt_pp);
-            }
+            //if(affichage) {
+            //    console.log(piece_pos);
+            //    console.log(mvt_pp);
+            //}
 
             let positions_piece = [];
             for (let m of mvt_pp) {
@@ -684,15 +722,15 @@ export class GameManager {
             }
 
             player.setPossibleMove(p_player, positions_piece);
-            if(affichage) {
-                console.log(positions_piece);
-                console.log(" ===================================== ");
-            }
+            //if(affichage) {
+            //    console.log(positions_piece);
+            //    console.log(" ===================================== ");
+            //}
         }
-        if(affichage) {
-            console.log(pieces_player);
-            console.log("=======================================");
-        }
+        //if(affichage) {
+        //    console.log(pieces_player);
+        //    console.log("=======================================");
+        //}
     }
 
     transformAPiece(piece, pos) {
@@ -847,9 +885,11 @@ export class GameManager {
 
         let animator = new AnimatorBoard(animation_duration, this.board);
         let obj = this;
+
+
         animator.onStart = new function () {
-            this.board.setAPieces(p1_case_start.col, p1_case_start.row, undefined);
-            this.board.setAPieces(p2_case_start.col, p2_case_start.row, undefined);
+            obj.board.setAPieces(p1_case_start.col, p1_case_start.row, undefined);
+            obj.board.setAPieces(p2_case_start.col, p2_case_start.row, undefined);
         }
 
         animator.onEnd = new function () {
@@ -932,8 +972,8 @@ export class GameManager {
 
     //Remove last elem from cimatary player p layout
     popCimetaryLayout(player) {
-        console.log("POP : ELEM TO WATCH");
-        console.log(player);
+        //console.log("POP : ELEM TO WATCH");
+        //console.log(player);
 
         let ind = this.getIndex(player);
         if (ind >= 0) {
@@ -963,9 +1003,9 @@ export class GameManager {
     }
 
     constructPlayerLayout(elem) {
-        console.log("CONSTRUCT PLAYER LAYOUT");
-        console.log(elem);
-        console.log(this.players);
+        //console.log("CONSTRUCT PLAYER LAYOUT");
+        //console.log(elem);
+        //console.log(this.players);
 
         for (let p of this.players) {
             p.UI_draw(elem);

@@ -59,11 +59,6 @@ body.modal-open  {
     overflow: hidden;
     position: fixed;
 }
-/*
-body.viewport-lg {
-position: absolute;
-}*/
-
 
 header{
     color: white;
@@ -81,6 +76,7 @@ header{
     box-shadow: var(--box-shadow-hard);
     font-family: 'Permanent Marker', cursive;
     position: relative;
+    min-height: 80px;
 }
 
 .nav-item .active {
@@ -231,6 +227,13 @@ div#homepage .parallaxBG{
         transform: translate(-13px, 50px) rotate(-45deg);
     }
 }
+
+
+
+/*===============================================================================
+ CONNECTION ELEMENTS
+ ===============================================================================*/
+
 
 
 /*===============================================================================

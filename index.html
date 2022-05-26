@@ -49,7 +49,7 @@
 
             <p id="currentPartyName">TEST</p>
 
-            <div class=" collapse navbar-collapse" id="navbarNavDropdown">
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto ">
                     <li class="nav-item">
                         <a class="nav-link mx-2" href="#" aria-current="page" id="homePageNAV_home" >
@@ -136,13 +136,16 @@
                     </div>
 
                     <div class="col-6">
-                        <button style="font-size: x-large" class="btn-warning btn" type="button"
-                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
-                                aria-controls="offcanvasBottom">Déclarer forfait
+                        <button id="ffbtn" style="font-size: x-large" class="btn-warning btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+                            Déclarer forfait
                         </button>
-                        <p>
+                        <p id="fftxt">
                             (Ca serait dommage de laisser votre adversaire l’emporter si facilement...)
                         </p>
+
+                        <button id="restartbtn" style="font-size: x-large" class="btn-success btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+                            Recommencer la partie
+                        </button>
                     </div>
 
                 </div>
@@ -153,14 +156,11 @@
 </div>
 
 <div id="homepage" class="container-fluid">
-    <div class="parallaxBG row">
-        <div class="px-4 pt-5 pb-1 mb-2 mt-5 text-center">
-            <div class="row my-5"></div>
-            <img class="d-block mx-auto mt-5 mb-4" src="./res/drawable/img/jumble_pieces.png" alt="" width="75"
-                 height="100">
-            <h1 class="display-6 fw-bold" id="title"
-                style="font-family: 'Permanent Marker', cursive; font-size: xxx-large">ChessBurger 2</h1>
-            <div class="col-lg-6 mx-auto">
+    <div class="parallaxBG">
+        <div class="px-4 text-center h-100 d-flex justify-content-center align-items-center flex-column ">
+            <img class="d-block mx-auto mt-5 mb-4" src="./res/drawable/img/jumble_pieces.png" alt="" width="75" height="100">
+            <h1 class="display-6 fw-bold" id="title" style="font-family: 'Permanent Marker', cursive; font-size: xxx-large">ChessBurger 2</h1>
+            <div class="col-lg-6 mx-auto mb-xl-5">
                 <p class="lead mb-4" id="description" style="font-family: 'Roboto', sans-serif;">Bienvenue sur le site
                     internet de ChessBurger pour jouer en ligne aux échecs</p>
                 <div class="d-grid gap-5 d-sm-flex justify-content-sm-center">
@@ -444,7 +444,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" id="createGameButton" data-bs-dismiss="modal">Céer une partie</button>
+                <button type="button" class="btn btn-primary" id="createGameButton" data-bs-dismiss="modal">Créer une partie</button>
             </div>
         </div>
     </div>
@@ -503,8 +503,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="dissmissButton" class="btn btn-secondary" data-bs-dismiss="modal">Retour
-                </button>
+                <button type="button" id="dissmissButton" class="btn btn-secondary" data-bs-dismiss="modal">Retour</button>
             </div>
         </div>
     </div>
@@ -647,6 +646,10 @@
     const dom_button_swap               = document.getElementById("swapButton");
     const dom_button_swap_bis           = document.getElementById("swapButtonBis");
     const dom_button_game_local         = document.getElementById("startGameLocal");
+    const dom_button_ff                 = document.getElementById("ffbtn");
+    const dom_text_ff                   = document.getElementById("fftxt");
+    const dom_button_restart            = document.getElementById("restartbtn");
+
     const dom_button_edit_profil        = document.getElementById("editProfil");
     const dom_button_edit_preference    = document.getElementById("preferences");
     const dom_button_goOnline           = document.getElementById("buttonOnline");

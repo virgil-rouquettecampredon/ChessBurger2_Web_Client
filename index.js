@@ -231,51 +231,53 @@ function onEnemyPlayerPlay(uid, obj) {
 
 
     const refPiece = ref(db, "rooms/" + uid);
-
     onValue(refPiece, (snapshot) => {
-        let piece1 = snapshot.val()['piece1'];
-        let piece2 = snapshot.val()['piece2'];
+        //First we need to read the value of the loose elem
+        let loose = snapshot.val()['loose'];
+        if(loose === undefined){
+            //Nobody loosed, so we continue to play the enemy shot
+            let piece1 = snapshot.val()['piece1'];
+            let piece2 = snapshot.val()['piece2'];
 
-        console.log(" ===== SNAPSHOT GET DB SHOT ===== ")
-        console.log(piece1);
-        console.log(piece2);
-        console.log(" ===== ==================== ===== ")
+            console.log(" ===== SNAPSHOT GET DB SHOT ===== ");
+            console.log(piece1);
+            console.log(piece2);
+            console.log(" ===== ==================== ===== ");
 
-        let move        = piece1.split("/");
-        let posStart    = move[0].split("_");
-        let posEnd      = move[1].split("_");
-        let idTransform = move[2];
+            if(piece1.length !== 0) {
+                let move        = piece1.split("/");
+                let posStart    = move[0].split("_");
+                let posEnd      = move[1].split("_");
+                let idTransform = move[2];
 
-        console.log("COUT ADVERSE JOUE : ");
-        console.log(posStart);
-        console.log(posEnd);
-        console.log(idTransform);
-        console.log("=====================");
+                console.log("COUT ADVERSE JOUE : ");
+                console.log(posStart);
+                console.log(posEnd);
+                console.log(idTransform);
+                console.log("=====================");
+                obj.shotsToPerform.push(new DB_Shots(
+                    new Position(
+                        parseInt(posStart[0]),
+                        parseInt(posStart[1])
+                    ),
+                    new Position(
+                        parseInt(posEnd[0]),
+                        parseInt(posEnd[1])
+                    ),
+                    parseInt(move[2])));
 
-        obj.shotsToPerform.push(new DB_Shots(
-            new Position(
-                parseInt(posStart[0]),
-                parseInt(posStart[1])
-            ),
-            new Position(
-                parseInt(posEnd[0]),
-                parseInt(posEnd[1])
-            ),
-            parseInt(move[2]))
-        );
-
-
-        if (piece2 != ""){
-            let move2 = piece2.split("/");
-            let posStart2 = move2[0].split("_");
-            let posEnd2 = move2[1].split("_");
-            obj.shotsToPerform.push(new DB_Shots(new Position(parseInt(posStart2[0]), parseInt(posStart2[1])), new Position(parseInt(posEnd2[0]), parseInt(posEnd2[1])), -1));
+                if (piece2.length !== 0) {
+                    let move2           = piece2.split("/");
+                    let posStart2       = move2[0].split("_");
+                    let posEnd2         = move2[1].split("_");
+                    obj.shotsToPerform.push(new DB_Shots(new Position(parseInt(posStart2[0]), parseInt(posStart2[1])), new Position(parseInt(posEnd2[0]), parseInt(posEnd2[1])), -1));
+                }
+            }
+            obj.playAllEnemyShots();
+        }else{
+            obj.winByFF();
         }
 
-        //piece1 = "";
-        //piece2 = "";
-
-        obj.playAllEnemyShots();
     }, {
         onlyOnce: true
     });
@@ -284,7 +286,6 @@ function onEnemyPlayerPlay(uid, obj) {
 //Fonction permettant de mettre à jour la DB
 export function SyncToDataBase(uid,playerIndex,shotToPush){
     console.log("SYNC TO DATABASE !");
-
     console.log(shotToPush);
     console.log(playerIndex);
     console.log(uid);
@@ -296,6 +297,12 @@ export function SyncToDataBase(uid,playerIndex,shotToPush){
             piece1: "" + shotToPush[0].startPosPlayerPlay.x + "_" + shotToPush[0].startPosPlayerPlay.y + "/" + shotToPush[0].endPosPlayerPlay.x + "_" + shotToPush[0].endPosPlayerPlay.y + "/" + shotToPush[0].IDTransformedPiece
         });
     }
+    else{
+        update(ref(db, 'rooms/' + uid), {
+            piece1: ""
+        });
+    }
+
     if (shotToPush.length > 1){
         update(ref(db, 'rooms/' + uid), {
             piece2: "" + shotToPush[1].startPosPlayerPlay.x + "_" + shotToPush[1].startPosPlayerPlay.y + "/" + shotToPush[1].endPosPlayerPlay.x + "_" + shotToPush[1].endPosPlayerPlay.y
@@ -319,6 +326,23 @@ export function SyncToDataBase(uid,playerIndex,shotToPush){
     }
 
     shotToPush.length = 0;
+}
+
+export function setOnLoose(uid, playerIndex){
+    update(ref(db, 'rooms/' + uid), {
+        loose: "yes"
+    });
+
+    if (playerIndex == 0){
+        update(ref(db, 'rooms/' + uid),{
+            turn : 2
+        });
+    }
+    else{
+        update(ref(db, 'rooms/' + uid),{
+            turn : 1
+        });
+    }
 }
 
 export function addHistoryGame(player, nbCoup, haveWin, opponent, eloDiff) {
@@ -358,7 +382,8 @@ function cleanEverything() {
     dom_createAccount.style.display             = "none";
     dom_arrow_animation.style.display           = "block";
 
-    //document.getElementsByTagName('body')[0].style.cssText = "background"
+    dom_nav_homePage_logo.style.display         = "block";
+    dom_nav_homePage_home.style.display         = "block";
 }
 
 //Fonction appelée pour charger la page principale de jeu
@@ -381,6 +406,10 @@ function startHomePage() {
 
 //========== Fonctions de jeu
 function startJouer() {
+    dom_button_restart.style.display = "none";
+    dom_text_ff.style.display        = "block";
+    dom_button_ff.style.display      = "inline-block";
+
     if (isAuthentified) {
         cleanEverything();
         dom_nav_jouer.style.display         = "none";
@@ -411,17 +440,20 @@ function startGame_local() {
 
 //Construction et lancement de la partie en ligne
 function startGame_online(name) {
-    console.log(" ++++++++++++ ONLINE ++++++++++++ ");
+    //console.log(" ++++++++++++ ONLINE ++++++++++++ ");
     cleanEverything();
+
+    dom_nav_homePage_logo.style.display         = "none";
+    dom_nav_homePage_home.style.display         = "none";
 
     dom_nav_partyName.innerText         = name;
     dom_nav_partyName.style.display     = "block";
 
-    dom_nav_jouer.style.display = "none";
+    dom_nav_jouer.style.display         = "none";
 
-    dom_main_game.style.cssText = "display : flex !important";
-    game.innerHTML              = "";
-    game_ui.innerHTML           = "";
+    dom_main_game.style.cssText         = "display : flex !important";
+    game.innerHTML                      = "";
+    game_ui.innerHTML                   = "";
 
     //Création du plateau de jeu
     let board   = new Board();
@@ -432,14 +464,14 @@ function startGame_online(name) {
     gameManager.playerIndex = player;
 
     if (player == 0) {
-        console.log("JE SUIS LE PREMIER JOUEUR");
+        //console.log("JE SUIS LE PREMIER JOUEUR");
         //Si c'est le premier joueur a rentrer dans la partie
         //On ne connait que le premier joueur pour l'instant, celui qui vient de générer la partie
         gameManager.addAPlayerToTheRoom(auth.currentUser.uid);
         //On attend le second joueur pour lancer la partie
         wait2Player();
     } else {
-        console.log("JE SUIS LE SECOND JOUEUR");
+        //console.log("JE SUIS LE SECOND JOUEUR");
         //Si c'est le joueur joueur a rentrer dans la partie
         //Alors on renseigne les joueurs et on commmence à jouer
         gameManager.addAPlayerToTheRoom(gameNameOnlineActivity);
@@ -451,10 +483,9 @@ function startGame_online(name) {
 function wait2Player() {
     const user      = auth.currentUser.uid;
     const refUser   = ref(db, "rooms/" + user + '/player2');
-
     onValue(refUser, (snapshot) => {
         if (snapshot.val() != "") {
-            console.log("SECOND PLAYER JOIN THE GAME !");
+            //console.log("SECOND PLAYER JOIN THE GAME !");
             gameManager.addAPlayerToTheRoom(snapshot.val());
             gameManager.start();
             off(refUser);
@@ -571,7 +602,7 @@ function addParty() {
     let name = document.getElementById("partyName").value;
 
     onValue(ref(db, 'users/' + userId), (snapshot) => {
-        console.log(snapshot.val()['elo']);
+        //console.log(snapshot.val()['elo']);
         set(ref(db, 'rooms/' + userId), {
             player1: userId,
             player2: "",
@@ -613,10 +644,10 @@ function createTestRoom() {
 }
 
 function joinParty(name, user1) {
-    console.log("============ JOIN A PARTY ============");
-    console.log(name);
-    console.log(user1);
-    console.log("============ ============ ============");
+    //console.log("============ JOIN A PARTY ============");
+    //console.log(name);
+    //console.log(user1);
+    //console.log("============ ============ ============");
 
     onValue(ref(db, 'rooms/' + user1), (snapshshot) => {
         let player2 = snapshshot.val()['player2'];
@@ -640,34 +671,34 @@ function joinParty(name, user1) {
 }
 
 function refreshListParty() {
-    console.log("===============REFRESH LIST PARTY=======================")
+    //console.log("===============REFRESH LIST PARTY=======================")
     let listParty = document.getElementById("party");
     listParty.innerHTML = createTestRoom();
 
     onValue(ref(db, 'rooms/'), (snapshot) => {
-        console.log("===============SNAPSHOT VAL=======================")
-        console.log(snapshot.val());
+        //console.log("===============SNAPSHOT VAL=======================")
+        //console.log(snapshot.val());
 
         for (const snapshotKey in snapshot.val()) {
-            console.log("===============SNAPSHOT KEY=======================")
-            console.log(snapshotKey);
+            //console.log("===============SNAPSHOT KEY=======================")
+            //console.log(snapshotKey);
 
             onValue(ref(db, 'rooms/' + snapshotKey), (snap) => {
-                console.log("===============SNAP VAL=======================")
-                console.log(snap.val());
+                //console.log("===============SNAP VAL=======================")
+                //console.log(snap.val());
 
                 if (snap.val()['player2'] == "") {
 
-                    console.log("CREATE A PARTY DOM");
-                    console.log(snap.val()['gameName'] + " " + snapshotKey);
+                    //console.log("CREATE A PARTY DOM");
+                    //console.log(snap.val()['gameName'] + " " + snapshotKey);
 
                     listParty.innerHTML += createAParty(snap.val()['gameName'], snapshotKey);
                     let buttonJoinParty = document.getElementById(snapshotKey);
 
-                    console.log(buttonJoinParty);
+                    //console.log(buttonJoinParty);
 
                     buttonJoinParty.addEventListener("click", function () {
-                        console.log("I CLICK ON JOIN");
+                        //console.log("I CLICK ON JOIN");
                         joinParty(snap.val()['gameName'], snapshotKey)
                     });
                 }
@@ -688,7 +719,7 @@ function readURL(input) {
         let btn_pp_ut = document.getElementById("buttonValidPP");
         var reader = new FileReader();
         reader.onload = function (e) {
-            console.log(e);
+            //console.log(e);
             file = input.files[0];
             //file = reader.result;
             //console.log(file);
@@ -739,12 +770,12 @@ async function displayClassment(){
 //========== Fonctions de profil
 function startProfil() {
     cleanEverything();
-    console.log("PROFIL STARTED !");
+    console.log("PROFIL STARTED");
     const user = auth.currentUser.uid;
     const refUser = ref(db, "users/" + user);
-    console.log(db);
-    console.log(refUser);
-    console.log(user);
+    //console.log(db);
+    //console.log(refUser);
+    //console.log(user);
 
 
     //UI TO MODIFY
@@ -777,27 +808,27 @@ function loadPlaceHolder() {
 
 //Sauvegarder les données de changement de préférences
 function startEditPreference() {
-    console.log("ANIMATION : " + dom_switch_animation.value);
+    //console.log("ANIMATION : " + dom_switch_animation.value);
     updatePreferences((dom_switch_animation.checked)? 0:1);
 }
 
 //Récupération préférences DB
 function retrivePreferences(){
-    console.log("GET VALUE FROM PREFERENCES");
+    //console.log("GET VALUE FROM PREFERENCES");
 
     const user = auth.currentUser.uid;
     onValue(ref(db, 'users/' + user+ "/useAnimations"), (snapshot) => {
         //Get animation value
         //animation_value = (snapshot.val() == 0);
         dom_switch_animation.checked = (snapshot.val() == 0);
-        console.log("preferences : " + dom_switch_animation.checked);
+        //console.log("preferences : " + dom_switch_animation.checked);
     },{
         onlyOnce : true
     });
 }
 
 function updatePreferences(val) {
-    console.log("UPDATE PREFERENCES : " + val);
+    //console.log("UPDATE PREFERENCES : " + val);
 
     const user = auth.currentUser.uid;
     update(ref(db, 'users/' + user), {
@@ -808,19 +839,17 @@ function updatePreferences(val) {
 }
 
 function displayHistory() {
-    console.log("DISPLAY HISTORY");
-
+    //console.log("DISPLAY HISTORY");
     dom_history_liste.innerHTML = "";
 
-    //TODO Destroy old history display
     const user = auth.currentUser.uid;
     onValue(ref(db, 'history/' + user), (snapshot) => {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
 
         for (const snapshotKey in snapshot.val()) {
-            console.log(snapshotKey);
+            //console.log(snapshotKey);
             onValue(ref(db, 'history/' + user + '/' + snapshotKey), (snap) => {
-                console.log(snap.val());
+                //console.log(snap.val());
 
                 if (snap.val()['haveWin'] == 'win') {
                     addElementHistoryList(true, snap.val()['opponent'], snap.val()['eloDiff'], snap.val()['nbCoup'], "Echec et mat");
@@ -868,5 +897,22 @@ dom_button_goOnline.addEventListener('click', function () {
 preferencesAction.addEventListener('click', function (){
     retrivePreferences();
 });
+dom_button_ff.addEventListener('click', function (){
+    gameManager.onFFGame();
+
+    if(gameManager.constructor === GameManager) {
+        dom_button_restart.style.display = "inline-block";
+    }
+    dom_text_ff.style.display = "none";
+    dom_button_ff.style.display = "none";
+
+})
+dom_button_restart.addEventListener('click', function (){
+    startGame_local();
+    dom_button_restart.style.display = "none";
+    dom_text_ff.style.display        = "block";
+    dom_button_ff.style.display      = "inline-block";
+})
+
 
 window.onload = startHomePage;
