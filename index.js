@@ -44,6 +44,7 @@ console.log("INIT FIREBASE APP  :       DONE");
 const auth = getAuth(app);
 const db = getDatabase();
 let refTurn;
+let refLoose;
 console.log("GET DB             :       DONE");
 
 const loggin = async (email, pwd) => {
@@ -198,6 +199,21 @@ function upload() {
 
 
 /** ==================================================FUNCTION FOR GM ==================================================== **/
+export function roomListener(uid, playerIndex, obj) {
+    console.log("LOOSE LISTENER");
+    refLoose = ref(db, "rooms/" + uid + '/loose');
+    onValue(refLoose, (snapshot) => {
+        //turn listener simplification
+
+        if (snapshot.val() == playerIndex) {
+            obj.winByFF();
+        }
+        console.log(" ========== =============== ========== ");
+    }, /*{
+        onlyOnce: true
+    }*/);
+}
+
 export function turnListener(uid, playerIndex, obj) {
     console.log("TURN LISTENER");
     console.log(uid);
@@ -228,6 +244,7 @@ export function turnListener(uid, playerIndex, obj) {
 
 export function destroyListener(){
     off(refTurn);
+    off(refLoose);
 }
 
 //Quand un joueur ennemi va jouer un coup
@@ -244,10 +261,10 @@ function onEnemyPlayerPlay(uid, obj) {
         //First we need to read the value of the loose elem
 
         let loose = snapshot.val()['loose'];
-        if(loose == obj.playerIndex){
-            obj.winByFF();
-        }
-        else{
+        //if(loose == obj.playerIndex){
+        //    obj.winByFF();
+        //}
+        if(loose != null){
 
             //Nobody loosed, so we continue to play the enemy shot
             let piece1 = snapshot.val()['piece1'];
