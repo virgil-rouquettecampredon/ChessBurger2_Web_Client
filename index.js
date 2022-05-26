@@ -245,19 +245,28 @@ export function turnListener(uid, playerIndex, obj) {
 
 export function pieceListener(uid, playerIndex, obj){
     refPiece= ref(db, "rooms/" + uid + '/piece1');
-    onValue(refTurn, (snapshot) => {
+    console.log("VALEUR DU PIECELISTENER :" + obj.valeur);
+    onValue(refPiece, (snapshot) => {
         //turn listener simplification
-
-        let v = snapshot.val();
-        if (v == 1){
-            update(ref(db, 'rooms/' + uid),{
-                turn : 2
+        console.log(snapshot)
+        if ( obj.valeur > 0) {
+            onValue(ref(db,"rooms/" + uid + "/turn"), (snap) => {
+                console.log(snap.val())
+                if (snap.val() == 1) {
+                    update(ref(db, 'rooms/' + uid), {
+                        turn: 2
+                    });
+                } else {
+                    update(ref(db, 'rooms/' + uid), {
+                        turn: 1
+                    });
+                }
+            }, {
+                onlyOnce: true
             });
         }
-        else{
-            update(ref(db, 'rooms/' + uid),{
-                turn : 1
-            });
+        else {
+            obj.valeur ++;
         }
     }, /*{
         onlyOnce: true

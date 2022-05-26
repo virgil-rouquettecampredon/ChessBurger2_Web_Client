@@ -41,6 +41,7 @@ export class GameManagerOnline extends GameManager {
         this.allPlayarsSet = false;
 
         this.nbCurP = 0;
+        this.valeur = 0;
 
 
         //Gestion évènements DOM
@@ -90,6 +91,7 @@ export class GameManagerOnline extends GameManager {
     //Lancer la partie de jeu
     start() {
         this.gameStarted = true;
+        this.valeur = 0;
 
         this.gameStopped = false;
         this.currentPlayer = this.players[this.playerIndex];
