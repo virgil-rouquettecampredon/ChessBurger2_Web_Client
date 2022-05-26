@@ -271,7 +271,6 @@ export class GameManagerOnline extends GameManager {
             super.onEndingGame();
             this.performHistoryWinner("Echec et Mat");
         }
-
         this.shotsToPerform = [];
     }
 
