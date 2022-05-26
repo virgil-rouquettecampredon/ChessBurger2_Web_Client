@@ -43,6 +43,7 @@ const app = initializeApp(firebaseConfig);
 console.log("INIT FIREBASE APP  :       DONE");
 const auth = getAuth(app);
 const db = getDatabase();
+let refTurn;
 console.log("GET DB             :       DONE");
 
 const loggin = async (email, pwd) => {
@@ -203,9 +204,7 @@ export function turnListener(uid, playerIndex, obj) {
     console.log(playerIndex);
     console.log(obj);
     console.log("================");
-
-
-    const refTurn = ref(db, "rooms/" + uid + '/turn');
+    refTurn = ref(db, "rooms/" + uid + '/turn');
     onValue(refTurn, (snapshot) => {
         //turn listener simplification
 
@@ -225,6 +224,10 @@ export function turnListener(uid, playerIndex, obj) {
     }, /*{
         onlyOnce: true
     }*/);
+}
+
+export function destroyTurnListener(){
+    off(refTurn);
 }
 
 //Quand un joueur ennemi va jouer un coup

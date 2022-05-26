@@ -7,7 +7,16 @@ import {Piece,King,Bishop,Pawn,Queen,Knight,Tower} from "./Piece.js";
 import {Player} from "./Player.js";
 import {MovementPiece, Movement} from "./Movement.js";
 import {downloadFileOnline} from "../../firebasStorage.js";
-import {deleteRoom, writeEloWinOrLoss, takePseudoAndElo,turnListener,SyncToDataBase, setOnLoose, addHistoryGame} from "../../index.js";
+import {
+    deleteRoom,
+    writeEloWinOrLoss,
+    takePseudoAndElo,
+    turnListener,
+    SyncToDataBase,
+    setOnLoose,
+    addHistoryGame,
+    destroyTurnListener
+} from "../../index.js";
 import {AnimatorBoard} from "./animator.js";
 /*================================================================================== */
 
@@ -274,6 +283,7 @@ export class GameManagerOnline extends GameManager {
         let p2 = this.players[1];
         if (this.playerIndex == 1) {
             //Set the data in DB for all players
+            console.log("IF")
             let eloDiff = eloInflated(p2.elo, p1.elo, p2.UID, true);
             addHistoryGame(p2.UID, this.nbTurn, "win", p1.pseudo, eloDiff, typeVict);
 
@@ -281,12 +291,17 @@ export class GameManagerOnline extends GameManager {
             addHistoryGame(p1.UID, this.nbTurn, "loose", p2.pseudo, eloDiff2, typeVict);
         }else{
             //Set the data in DB for all players
+            console.log("ELSE")
             let eloDiff = eloInflated(p1.elo, p2.elo, p1.UID, true);
             addHistoryGame(p1.UID, this.nbTurn, "win", p2.pseudo, eloDiff, typeVict);
 
             let eloDiff2 = eloInflated(p1.elo, p2.elo, p2.UID, false);
             addHistoryGame(p2.UID, this.nbTurn, "loose", p1.pseudo, eloDiff2, typeVict);
         }
+
+        //MAJ LISTERNERS ON DESTROY
+        destroyTurnListener();
+        this.deleteRoomsInformation();
     }
 
     transformEnnemyPiece(player, id, oldP, pos) {
