@@ -1,7 +1,7 @@
 # CHESSBURGER __2__ : WEB Client
 
 <p align="center">
-<img align="center" src="./res/drawable/img/logo.png"/>
+<img align="center" src="./res/drawable/img/logo.png"/ width="500" height="500">
 </p>
 
 ## Presentation
