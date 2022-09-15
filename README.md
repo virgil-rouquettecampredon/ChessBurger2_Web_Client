@@ -5,7 +5,7 @@
 </p>
 
 ## Presentation
-For the realization of an [Android project](https://github.com/virgil-rouquettecampredon/ProjetMobile), we had to set up a WEB client allowing a player to play chess online against another player on mobile.
+For the realization of an [Android project](https://github.com/virgil-rouquettecampredon/ProjetMobile) (which we advise you to consult), we had to set up a WEB client allowing a player to play chess online against another player on mobile.
 
 <b>Supervisor :</b>     
 -  Abdelhak Seriai (abdelhak.seriai@umontpellier.fr) 
